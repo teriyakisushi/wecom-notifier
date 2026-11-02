@@ -1,0 +1,78 @@
+{
+  "ref": "refs/heads/main",
+  "before": "1111111111111111111111111111111111111111",
+  "after": "2222222222222222222222222222222222222222",
+  "repository": {
+    "id": 1001,
+    "name": "dmao-wecom-notifier",
+    "full_name": "teriyakiushi/dmao-wecom-notifier",
+    "html_url": "https://github.com/teriyakiushi/dmao-wecom-notifier",
+    "description": "Send GitHub events to WeCom with templates and cards",
+    "default_branch": "main",
+    "private": false,
+    "owner": {
+      "login": "teriyakiushi"
+    },
+    "stargazers_count": 12,
+    "forks_count": 3,
+    "open_issues_count": 1
+  },
+  "pusher": {
+    "name": "teriyakiushi",
+    "email": "teriyakiushi@users.noreply.github.com"
+  },
+  "sender": {
+    "login": "teriyakiushi",
+    "id": 2002
+  },
+  "commits": [
+    {
+      "id": "2222222222222222222222222222222222222222",
+      "message": "feat: add WeCom notifier\n\nDetails in the body.",
+      "timestamp": "2026-11-02T07:00:00Z",
+      "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/commit/2222222222222222222222222222222222222222",
+      "author": {
+        "name": "Teriyaki Ushi",
+        "email": "teriyakiushi@users.noreply.github.com",
+        "username": "teriyakiushi"
+      },
+      "committer": {
+        "name": "Teriyaki Ushi",
+        "email": "teriyakiushi@users.noreply.github.com",
+        "username": "teriyakiushi"
+      }
+    },
+    {
+      "id": "3333333333333333333333333333333333333333",
+      "message": "docs: document per-event templates",
+      "timestamp": "2026-11-02T07:05:00Z",
+      "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/commit/3333333333333333333333333333333333333333",
+      "author": {
+        "name": "Teriyaki Ushi",
+        "email": "teriyakiushi@users.noreply.github.com",
+        "username": "teriyakiushi"
+      },
+      "committer": {
+        "name": "Teriyaki Ushi",
+        "email": "teriyakiushi@users.noreply.github.com",
+        "username": "teriyakiushi"
+      }
+    }
+  ],
+  "head_commit": {
+    "id": "3333333333333333333333333333333333333333",
+    "message": "docs: document per-event templates",
+    "timestamp": "2026-11-02T07:05:00Z",
+    "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/commit/3333333333333333333333333333333333333333",
+    "author": {
+      "name": "Teriyaki Ushi",
+      "email": "teriyakiushi@users.noreply.github.com",
+      "username": "teriyakiushi"
+    },
+    "committer": {
+      "name": "Teriyaki Ushi",
+      "email": "teriyakiushi@users.noreply.github.com",
+      "username": "teriyakiushi"
+    }
+  }
+}

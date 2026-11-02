@@ -1,0 +1,12 @@
+# 复制到 .github/wecom-notify/default.yml
+# 没有专门事件模板时使用；这里用 Markdown 兜底。
+msgtype: markdown
+markdown:
+  content: |
+    ### 📣 {{ repo.full_name }}
+
+    > 事件：`{{ event_name }}`{{ event_action }}
+    > 触发者：{{ actor }}
+    > 分支：{{ ref_name }}
+
+    [查看详情]({{ detail_url | default(repo.html_url) }})

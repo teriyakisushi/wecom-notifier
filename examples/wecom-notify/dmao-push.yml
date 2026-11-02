@@ -1,0 +1,19 @@
+# 复制到 .github/wecom-notify/dmao-push.yml
+# 继承 push 预设，只改来源、标题和键值行。
+extends: push
+
+overrides:
+  template_card:
+    source:
+      desc: "{{ vars.environment | default('GitHub') }}"
+      desc_color: 3
+    main_title:
+      title: "📦 {{ repo.name }} · {{ ref_name | truncate(12) }}"
+      desc: "{{ actor }} 推送了 {{ commit_count }} 个提交"
+    horizontal_content_list:
+      $each: commits
+      $limit: 3
+      $as: commit
+      $item:
+        keyname: 提交
+        value: "{{ commit.short_sha }} · {{ commit.first_line | truncate: 13 }}"

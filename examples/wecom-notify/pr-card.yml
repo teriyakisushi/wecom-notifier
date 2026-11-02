@@ -1,0 +1,12 @@
+# 复制到 .github/wecom-notify/pull_request.yml
+# 继承 PR 预设，改标题/来源，保留预设的键值行和按钮。
+extends: pull_request
+
+overrides:
+  template_card:
+    source:
+      desc: "GitHub PR"
+      desc_color: 0
+    main_title:
+      title: "#{{ pr.number }} {{ pr.title | truncate(40) }}"
+      desc: "{{ pr.user.login }} · {{ pr.state }}"

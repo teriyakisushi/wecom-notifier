@@ -1,0 +1,20 @@
+name: WeCom workflow failure
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  notify:
+    if: github.event.workflow_run.conclusion != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: teriyakiushi/dmao-wecom-notifier@v1
+        with:
+          webhook: ${{ secrets.WECOM_WEBHOOK }}
+          preset: workflow_run

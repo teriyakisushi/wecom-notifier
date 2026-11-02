@@ -1,0 +1,143 @@
+name: WeCom Notifier
+description: Send GitHub repository events to a WeCom group robot with event presets, custom cards, and YAML templates.
+author: teriyakiushi
+branding:
+  icon: message-square
+  color: green
+
+inputs:
+  webhook:
+    description: WeCom group robot webhook URL (or just the key). Use a secret. Optional for dry-run.
+    required: false
+    default: ''
+  preset:
+    description: Preset name, or auto to choose by event (auto, push, pull_request, issues, issue_comment, release, workflow_run, star, fork, create, delete, generic, text, markdown, card, none).
+    required: false
+    default: auto
+  payload:
+    description: Inline YAML/JSON message or config document. Takes precedence over automatic template discovery.
+    required: false
+    default: ''
+  template:
+    description: Explicit template file path. Takes precedence over template-dir.
+    required: false
+    default: ''
+  template-dir:
+    description: Directory searched for one template per event. Set to an empty string to disable auto discovery.
+    required: false
+    default: .github/wecom-notify
+  overrides:
+    description: YAML/JSON patch deep-merged onto the base message.
+    required: false
+    default: ''
+  vars:
+    description: YAML/JSON variables exposed as vars in templates.
+    required: false
+    default: ''
+  title:
+    description: Card main title (preset card).
+    required: false
+    default: ''
+  subtitle:
+    description: Card subtitle / main title description (preset card).
+    required: false
+    default: ''
+  content:
+    description: Card body text, or the content of preset text/markdown.
+    required: false
+    default: ''
+  info:
+    description: 'Card key/value rows, one "key: value" per line or a JSON array (max 6).'
+    required: false
+    default: ''
+  links:
+    description: Card jump links, one "title | url" per line or a JSON array (max 3).
+    required: false
+    default: ''
+  link-url:
+    description: Primary card action URL.
+    required: false
+    default: ''
+  link-title:
+    description: Title used when a jump link is generated from link-url.
+    required: false
+    default: 查看详情
+  image-url:
+    description: When set, build a news_notice card with this cover image.
+    required: false
+    default: ''
+  source:
+    description: Card source label.
+    required: false
+    default: GitHub
+  source-icon:
+    description: Card source icon URL.
+    required: false
+    default: ''
+  source-color:
+    description: Card source color (0 gray, 1 black, 2 red, 3 green).
+    required: false
+    default: '0'
+  dry-run:
+    description: Render and validate the message without sending it.
+    required: false
+    default: 'false'
+  fail-on-error:
+    description: Fail the step when validation or sending fails.
+    required: false
+    default: 'true'
+  auto-truncate:
+    description: Automatically truncate hard text/markdown/news byte limits.
+    required: false
+    default: 'true'
+  timeout:
+    description: Request timeout in seconds (1-60).
+    required: false
+    default: '10'
+  retries:
+    description: Retries for network errors, HTTP 5xx, and WeCom 45009 (0-5).
+    required: false
+    default: '2'
+  api-base:
+    description: Gateway base URL used when webhook is a bare key.
+    required: false
+    default: https://qyapi.weixin.qq.com
+  debug:
+    description: Print extra non-secret diagnostics.
+    required: false
+    default: 'false'
+
+outputs:
+  msgtype:
+    description: Final WeCom message type.
+    value: ${{ steps.notify.outputs.msgtype }}
+  payload:
+    description: Rendered JSON payload (truncated at 64KB).
+    value: ${{ steps.notify.outputs.payload }}
+  errcode:
+    description: WeCom errcode (empty for dry-run or local failures).
+    value: ${{ steps.notify.outputs.errcode }}
+  errmsg:
+    description: WeCom errmsg.
+    value: ${{ steps.notify.outputs.errmsg }}
+
+runs:
+  using: composite
+  steps:
+    - id: notify
+      shell: bash
+      env:
+        WECOM_INPUTS: ${{ toJSON(inputs) }}
+        WECOM_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        if ! command -v node >/dev/null 2>&1; then
+          echo "::error title=WeCom Notifier::Node.js 18+ is required but was not found on PATH."
+          exit 1
+        fi
+        major="$(node -p 'process.versions.node.split(".")[0]')"
+        if [ "$major" -lt 18 ]; then
+          echo "::error title=WeCom Notifier::Node.js 18+ is required (found $(node -v))."
+          exit 1
+        fi
+        node "$WECOM_ACTION_PATH/dist/index.mjs"

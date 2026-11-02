@@ -1,0 +1,22 @@
+name: WeCom PR card
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: teriyakiushi/dmao-wecom-notifier@v1
+        with:
+          webhook: ${{ secrets.WECOM_WEBHOOK }}
+          template-dir: .github/wecom-notify
