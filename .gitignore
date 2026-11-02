@@ -1,0 +1,25 @@
+# Local secrets and environment
+.env
+.env.*
+!.env.example
+
+# Research notes (temporary, not part of the shipped action)
+.research/
+
+# Dependencies and build caches
+node_modules/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Logs and local output
+*.log
+npm-debug.log*
+.npm/
