@@ -115,17 +115,17 @@ var require_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    function visit_(key, node, visitor, path3) {
-      const ctrl = callVisitor(key, node, visitor, path3);
+    function visit_(key, node, visitor, path4) {
+      const ctrl = callVisitor(key, node, visitor, path4);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path3, ctrl);
-        return visit_(key, ctrl, visitor, path3);
+        replaceNode(key, path4, ctrl);
+        return visit_(key, ctrl, visitor, path4);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path3 = Object.freeze(path3.concat(node));
+          path4 = Object.freeze(path4.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = visit_(i, node.items[i], visitor, path3);
+            const ci = visit_(i, node.items[i], visitor, path4);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -136,13 +136,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path3 = Object.freeze(path3.concat(node));
-          const ck = visit_("key", node.key, visitor, path3);
+          path4 = Object.freeze(path4.concat(node));
+          const ck = visit_("key", node.key, visitor, path4);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = visit_("value", node.value, visitor, path3);
+          const cv = visit_("value", node.value, visitor, path4);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -163,17 +163,17 @@ var require_visit = __commonJS({
     visitAsync.BREAK = BREAK;
     visitAsync.SKIP = SKIP;
     visitAsync.REMOVE = REMOVE;
-    async function visitAsync_(key, node, visitor, path3) {
-      const ctrl = await callVisitor(key, node, visitor, path3);
+    async function visitAsync_(key, node, visitor, path4) {
+      const ctrl = await callVisitor(key, node, visitor, path4);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path3, ctrl);
-        return visitAsync_(key, ctrl, visitor, path3);
+        replaceNode(key, path4, ctrl);
+        return visitAsync_(key, ctrl, visitor, path4);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path3 = Object.freeze(path3.concat(node));
+          path4 = Object.freeze(path4.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = await visitAsync_(i, node.items[i], visitor, path3);
+            const ci = await visitAsync_(i, node.items[i], visitor, path4);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -184,13 +184,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path3 = Object.freeze(path3.concat(node));
-          const ck = await visitAsync_("key", node.key, visitor, path3);
+          path4 = Object.freeze(path4.concat(node));
+          const ck = await visitAsync_("key", node.key, visitor, path4);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = await visitAsync_("value", node.value, visitor, path3);
+          const cv = await visitAsync_("value", node.value, visitor, path4);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -217,23 +217,23 @@ var require_visit = __commonJS({
       }
       return visitor;
     }
-    function callVisitor(key, node, visitor, path3) {
+    function callVisitor(key, node, visitor, path4) {
       if (typeof visitor === "function")
-        return visitor(key, node, path3);
+        return visitor(key, node, path4);
       if (identity.isMap(node))
-        return visitor.Map?.(key, node, path3);
+        return visitor.Map?.(key, node, path4);
       if (identity.isSeq(node))
-        return visitor.Seq?.(key, node, path3);
+        return visitor.Seq?.(key, node, path4);
       if (identity.isPair(node))
-        return visitor.Pair?.(key, node, path3);
+        return visitor.Pair?.(key, node, path4);
       if (identity.isScalar(node))
-        return visitor.Scalar?.(key, node, path3);
+        return visitor.Scalar?.(key, node, path4);
       if (identity.isAlias(node))
-        return visitor.Alias?.(key, node, path3);
+        return visitor.Alias?.(key, node, path4);
       return void 0;
     }
-    function replaceNode(key, path3, node) {
-      const parent = path3[path3.length - 1];
+    function replaceNode(key, path4, node) {
+      const parent = path4[path4.length - 1];
       if (identity.isCollection(parent)) {
         parent.items[key] = node;
       } else if (identity.isPair(parent)) {
@@ -845,10 +845,10 @@ var require_Collection = __commonJS({
     var createNode = require_createNode();
     var identity = require_identity();
     var Node = require_Node();
-    function collectionFromPath(schema, path3, value) {
+    function collectionFromPath(schema, path4, value) {
       let v = value;
-      for (let i = path3.length - 1; i >= 0; --i) {
-        const k = path3[i];
+      for (let i = path4.length - 1; i >= 0; --i) {
+        const k = path4[i];
         if (typeof k === "number" && Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -867,7 +867,7 @@ var require_Collection = __commonJS({
         sourceObjects: /* @__PURE__ */ new Map()
       });
     }
-    var isEmptyPath = (path3) => path3 == null || typeof path3 === "object" && !!path3[Symbol.iterator]().next().done;
+    var isEmptyPath = (path4) => path4 == null || typeof path4 === "object" && !!path4[Symbol.iterator]().next().done;
     var Collection = class extends Node.NodeBase {
       constructor(type, schema) {
         super(type);
@@ -897,11 +897,11 @@ var require_Collection = __commonJS({
        * be a Pair instance or a `{ key, value }` object, which may not have a key
        * that already exists in the map.
        */
-      addIn(path3, value) {
-        if (isEmptyPath(path3))
+      addIn(path4, value) {
+        if (isEmptyPath(path4))
           this.add(value);
         else {
-          const [key, ...rest] = path3;
+          const [key, ...rest] = path4;
           const node = this.get(key, true);
           if (identity.isCollection(node))
             node.addIn(rest, value);
@@ -915,8 +915,8 @@ var require_Collection = __commonJS({
        * Removes a value from the collection.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path3) {
-        const [key, ...rest] = path3;
+      deleteIn(path4) {
+        const [key, ...rest] = path4;
         if (rest.length === 0)
           return this.delete(key);
         const node = this.get(key, true);
@@ -930,8 +930,8 @@ var require_Collection = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path3, keepScalar) {
-        const [key, ...rest] = path3;
+      getIn(path4, keepScalar) {
+        const [key, ...rest] = path4;
         const node = this.get(key, true);
         if (rest.length === 0)
           return !keepScalar && identity.isScalar(node) ? node.value : node;
@@ -949,8 +949,8 @@ var require_Collection = __commonJS({
       /**
        * Checks if the collection includes a value with the key `key`.
        */
-      hasIn(path3) {
-        const [key, ...rest] = path3;
+      hasIn(path4) {
+        const [key, ...rest] = path4;
         if (rest.length === 0)
           return this.has(key);
         const node = this.get(key, true);
@@ -960,8 +960,8 @@ var require_Collection = __commonJS({
        * Sets a value in this collection. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path3, value) {
-        const [key, ...rest] = path3;
+      setIn(path4, value) {
+        const [key, ...rest] = path4;
         if (rest.length === 0) {
           this.set(key, value);
         } else {
@@ -3476,9 +3476,9 @@ var require_Document = __commonJS({
           this.contents.add(value);
       }
       /** Adds a value to the document. */
-      addIn(path3, value) {
+      addIn(path4, value) {
         if (assertCollection(this.contents))
-          this.contents.addIn(path3, value);
+          this.contents.addIn(path4, value);
       }
       /**
        * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
@@ -3553,14 +3553,14 @@ var require_Document = __commonJS({
        * Removes a value from the document.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path3) {
-        if (Collection.isEmptyPath(path3)) {
+      deleteIn(path4) {
+        if (Collection.isEmptyPath(path4)) {
           if (this.contents == null)
             return false;
           this.contents = null;
           return true;
         }
-        return assertCollection(this.contents) ? this.contents.deleteIn(path3) : false;
+        return assertCollection(this.contents) ? this.contents.deleteIn(path4) : false;
       }
       /**
        * Returns item at `key`, or `undefined` if not found. By default unwraps
@@ -3575,10 +3575,10 @@ var require_Document = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path3, keepScalar) {
-        if (Collection.isEmptyPath(path3))
+      getIn(path4, keepScalar) {
+        if (Collection.isEmptyPath(path4))
           return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
-        return identity.isCollection(this.contents) ? this.contents.getIn(path3, keepScalar) : void 0;
+        return identity.isCollection(this.contents) ? this.contents.getIn(path4, keepScalar) : void 0;
       }
       /**
        * Checks if the document includes a value with the key `key`.
@@ -3589,10 +3589,10 @@ var require_Document = __commonJS({
       /**
        * Checks if the document includes a value at `path`.
        */
-      hasIn(path3) {
-        if (Collection.isEmptyPath(path3))
+      hasIn(path4) {
+        if (Collection.isEmptyPath(path4))
           return this.contents !== void 0;
-        return identity.isCollection(this.contents) ? this.contents.hasIn(path3) : false;
+        return identity.isCollection(this.contents) ? this.contents.hasIn(path4) : false;
       }
       /**
        * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -3609,13 +3609,13 @@ var require_Document = __commonJS({
        * Sets a value in this document. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path3, value) {
-        if (Collection.isEmptyPath(path3)) {
+      setIn(path4, value) {
+        if (Collection.isEmptyPath(path4)) {
           this.contents = value;
         } else if (this.contents == null) {
-          this.contents = Collection.collectionFromPath(this.schema, Array.from(path3), value);
+          this.contents = Collection.collectionFromPath(this.schema, Array.from(path4), value);
         } else if (assertCollection(this.contents)) {
-          this.contents.setIn(path3, value);
+          this.contents.setIn(path4, value);
         }
       }
       /**
@@ -5576,9 +5576,9 @@ var require_cst_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    visit.itemAtPath = (cst, path3) => {
+    visit.itemAtPath = (cst, path4) => {
       let item = cst;
-      for (const [field, index] of path3) {
+      for (const [field, index] of path4) {
         const tok = item?.[field];
         if (tok && "items" in tok) {
           item = tok.items[index];
@@ -5587,23 +5587,23 @@ var require_cst_visit = __commonJS({
       }
       return item;
     };
-    visit.parentCollection = (cst, path3) => {
-      const parent = visit.itemAtPath(cst, path3.slice(0, -1));
-      const field = path3[path3.length - 1][0];
+    visit.parentCollection = (cst, path4) => {
+      const parent = visit.itemAtPath(cst, path4.slice(0, -1));
+      const field = path4[path4.length - 1][0];
       const coll = parent?.[field];
       if (coll && "items" in coll)
         return coll;
       throw new Error("Parent collection not found");
     };
-    function _visit(path3, item, visitor) {
-      let ctrl = visitor(item, path3);
+    function _visit(path4, item, visitor) {
+      let ctrl = visitor(item, path4);
       if (typeof ctrl === "symbol")
         return ctrl;
       for (const field of ["key", "value"]) {
         const token = item[field];
         if (token && "items" in token) {
           for (let i = 0; i < token.items.length; ++i) {
-            const ci = _visit(Object.freeze(path3.concat([[field, i]])), token.items[i], visitor);
+            const ci = _visit(Object.freeze(path4.concat([[field, i]])), token.items[i], visitor);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -5614,10 +5614,10 @@ var require_cst_visit = __commonJS({
             }
           }
           if (typeof ctrl === "function" && field === "key")
-            ctrl = ctrl(item, path3);
+            ctrl = ctrl(item, path4);
         }
       }
-      return typeof ctrl === "function" ? ctrl(item, path3) : ctrl;
+      return typeof ctrl === "function" ? ctrl(item, path4) : ctrl;
     }
     exports.visit = visit;
   }
@@ -7373,7 +7373,7 @@ import { readFileSync as readFileSync3 } from "node:fs";
 
 // src/index.mjs
 import { appendFileSync as appendFileSync2, existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
-import path2 from "node:path";
+import path3 from "node:path";
 
 // src/errors.mjs
 var NotifierError = class extends Error {
@@ -7447,20 +7447,20 @@ function clone(value) {
   }
   return value;
 }
-function assertSafeKey(key, path3) {
+function assertSafeKey(key, path4) {
   if (UNSAFE_KEYS.has(key)) {
     throw new ConfigError(`Unsafe object key "${key}" is not allowed`, {
-      path: path3,
+      path: path4,
       hint: "Remove __proto__, constructor, or prototype keys from YAML/JSON."
     });
   }
 }
-function deepMerge(base, patch, path3 = "") {
+function deepMerge(base, patch, path4 = "") {
   if (patch === null) return void 0;
   if (!isPlainObject(patch)) return clone(patch);
   const out = isPlainObject(base) ? clone(base) : {};
   for (const [key, value] of Object.entries(patch)) {
-    const childPath = path3 ? `${path3}.${key}` : key;
+    const childPath = path4 ? `${path4}.${key}` : key;
     assertSafeKey(key, childPath);
     if (value === null) {
       delete out[key];
@@ -8027,7 +8027,7 @@ function findEventTemplate({ workspace, templateDir, eventName }) {
     throw new ConfigError(`Multiple templates match event "${eventName}": ${matches.join(", ")}`, {
       code: "E_TEMPLATE_AMBIGUOUS",
       path: templateDir,
-      hint: "Keep one file per event, e.g. push.yml or dmao-push.yml, but not both."
+      hint: "Keep one file per event, e.g. push.yml or wecom-push.yml, but not both."
     });
   }
   if (matches.length === 1) {
@@ -8125,6 +8125,7 @@ var DEFAULTS = Object.freeze({
   timeout: 10,
   retries: 2,
   apiBase: "https://qyapi.weixin.qq.com",
+  html: "",
   debug: false
 });
 var INPUT_KEYS = Object.freeze({
@@ -8152,6 +8153,7 @@ var INPUT_KEYS = Object.freeze({
   timeout: "timeout",
   retries: "retries",
   apiBase: "api-base",
+  html: "html",
   debug: "debug"
 });
 var KEBAB_TO_CAMEL = Object.fromEntries(
@@ -8331,8 +8333,8 @@ var Logger = class {
     if (!this.debugEnabled) return;
     this.info(`[debug] ${message}`);
   }
-  warn(code, message, path3) {
-    const text = this.redact(path3 ? `${message} (${path3})` : message);
+  warn(code, message, path4) {
+    const text = this.redact(path4 ? `${message} (${path4})` : message);
     if (this.isActions) {
       const title = code ? `WeCom Notifier ${code}` : "WeCom Notifier";
       this.stderr.write(`::warning title=${escapeProperty(title)}::${escapeData(text)}
@@ -8342,8 +8344,8 @@ var Logger = class {
 `);
     }
   }
-  error(code, message, path3) {
-    const text = this.redact(path3 ? `${message} (${path3})` : message);
+  error(code, message, path4) {
+    const text = this.redact(path4 ? `${message} (${path4})` : message);
     if (this.isActions) {
       const title = code ? `WeCom Notifier ${code}` : "WeCom Notifier";
       this.stderr.write(`::error title=${escapeProperty(title)}::${escapeData(text)}
@@ -8391,8 +8393,8 @@ var TYPE_ALIASES = /* @__PURE__ */ new Map([
   ["card_news", "news_notice"],
   ["news_notice", "news_notice"]
 ]);
-function warning(code, message, path3) {
-  return { level: "warning", code, message, path: path3 };
+function warning(code, message, path4) {
+  return { level: "warning", code, message, path: path4 };
 }
 function asString(value, fallback = "") {
   if (value === void 0 || value === null) return fallback;
@@ -8694,15 +8696,15 @@ var LIMITS = {
   markdown: 4096,
   markdown_v2: 4096
 };
-function warning2(code, message, path3) {
-  return { level: "warning", code, message, path: path3 };
+function warning2(code, message, path4) {
+  return { level: "warning", code, message, path: path4 };
 }
-function fitField(target, key, max, path3, warnings) {
+function fitField(target, key, max, path4, warnings) {
   const value = target[key];
   if (typeof value !== "string") return;
   if (byteLength(value) <= max) return;
   target[key] = fitBytes(value, max);
-  warnings.push(warning2("W_TRUNCATED", `Truncated ${path3} to ${max} bytes`, path3));
+  warnings.push(warning2("W_TRUNCATED", `Truncated ${path4} to ${max} bytes`, path4));
 }
 function truncateMessage(message) {
   const warnings = [];
@@ -8733,51 +8735,51 @@ var JUMP_LIMIT = 3;
 var NEWS_MIN = 1;
 var NEWS_MAX = 8;
 var MD5_RE = /^[a-f0-9]{32}$/u;
-function issue(level, code, message, path3, hint) {
-  const item = { level, code, message, path: path3 };
+function issue(level, code, message, path4, hint) {
+  const item = { level, code, message, path: path4 };
   if (hint) item.hint = hint;
   return item;
 }
-function error(code, message, path3, hint) {
-  return issue("error", code, message, path3, hint);
+function error(code, message, path4, hint) {
+  return issue("error", code, message, path4, hint);
 }
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";
 }
-function checkString(value, path3, errors, { required = true, code = "E_FIELD_TYPE" } = {}) {
+function checkString(value, path4, errors, { required = true, code = "E_FIELD_TYPE" } = {}) {
   if (value === void 0 || value === null) {
-    if (required) errors.push(error(code, `${path3} is required`, path3));
+    if (required) errors.push(error(code, `${path4} is required`, path4));
     return false;
   }
   if (typeof value !== "string") {
-    errors.push(error(code, `${path3} must be a string`, path3));
+    errors.push(error(code, `${path4} must be a string`, path4));
     return false;
   }
   if (required && value.trim() === "") {
-    errors.push(error(code, `${path3} must not be empty`, path3));
+    errors.push(error(code, `${path4} must not be empty`, path4));
     return false;
   }
   return true;
 }
-function checkUrl(value, path3, errors, { required = true } = {}) {
+function checkUrl(value, path4, errors, { required = true } = {}) {
   if (value === void 0 || value === null || value === "") {
-    if (required) errors.push(error("E_URL_REQUIRED", `${path3} is required`, path3));
+    if (required) errors.push(error("E_URL_REQUIRED", `${path4} is required`, path4));
     return false;
   }
   if (typeof value !== "string" || !isHttpUrl(value)) {
-    errors.push(error("E_URL_INVALID", `${path3} must be an http(s) URL`, path3));
+    errors.push(error("E_URL_INVALID", `${path4} must be an http(s) URL`, path4));
     return false;
   }
   return true;
 }
-function checkCharLimit(value, max, path3, errors, warnings, { level = "warning", label = "recommended" } = {}) {
+function checkCharLimit(value, max, path4, errors, warnings, { level = "warning", label = "recommended" } = {}) {
   if (typeof value !== "string") return;
   if (codePointLength(value) > max) {
     const item = issue(
       level,
       level === "error" ? "E_FIELD_LENGTH" : "W_FIELD_LENGTH",
-      `${path3} is longer than the ${label} limit of ${max} characters`,
-      path3,
+      `${path4} is longer than the ${label} limit of ${max} characters`,
+      path4,
       level === "error" ? void 0 : "WeCom may truncate or reject this field."
     );
     (level === "error" ? errors : warnings).push(item);
@@ -8880,30 +8882,30 @@ function validateNews(message, errors, warnings) {
     );
   }
   body.articles.forEach((article, index) => {
-    const path3 = `news.articles[${index}]`;
+    const path4 = `news.articles[${index}]`;
     if (!isPlainObject(article)) {
-      errors.push(error("E_ARTICLE", `${path3} must be an object`, path3));
+      errors.push(error("E_ARTICLE", `${path4} must be an object`, path4));
       return;
     }
-    if (checkString(article.title, `${path3}.title`, errors)) {
+    if (checkString(article.title, `${path4}.title`, errors)) {
       const bytes = byteLength(article.title);
       if (bytes > 128) {
-        errors.push(error("E_ARTICLE_TITLE", `${path3}.title is ${bytes} bytes; the limit is 128 bytes`, `${path3}.title`));
+        errors.push(error("E_ARTICLE_TITLE", `${path4}.title is ${bytes} bytes; the limit is 128 bytes`, `${path4}.title`));
       }
     }
     if (article.description !== void 0) {
-      if (checkString(article.description, `${path3}.description`, errors, { required: false })) {
+      if (checkString(article.description, `${path4}.description`, errors, { required: false })) {
         const bytes = byteLength(article.description);
         if (bytes > 512) {
           errors.push(
-            error("E_ARTICLE_DESC", `${path3}.description is ${bytes} bytes; the limit is 512 bytes`, `${path3}.description`)
+            error("E_ARTICLE_DESC", `${path4}.description is ${bytes} bytes; the limit is 512 bytes`, `${path4}.description`)
           );
         }
       }
     }
-    checkUrl(article.url, `${path3}.url`, errors);
+    checkUrl(article.url, `${path4}.url`, errors);
     if (article.picurl !== void 0 && article.picurl !== "") {
-      checkUrl(article.picurl, `${path3}.picurl`, errors, { required: false });
+      checkUrl(article.picurl, `${path4}.picurl`, errors, { required: false });
     }
   });
 }
@@ -8916,20 +8918,20 @@ function validateMedia(message, errors) {
   }
   checkString(body.media_id, `${type}.media_id`, errors);
 }
-function checkAction(action, path3, errors) {
+function checkAction(action, path4, errors) {
   if (!isPlainObject(action)) {
-    errors.push(error("E_CARD_ACTION", `${path3} is required`, path3));
+    errors.push(error("E_CARD_ACTION", `${path4} is required`, path4));
     return;
   }
   if (action.type !== 1 && action.type !== 2) {
-    errors.push(error("E_CARD_ACTION_TYPE", `${path3}.type must be 1 (URL) or 2 (mini program)`, `${path3}.type`));
+    errors.push(error("E_CARD_ACTION_TYPE", `${path4}.type must be 1 (URL) or 2 (mini program)`, `${path4}.type`));
     return;
   }
   if (action.type === 1) {
-    checkUrl(action.url, `${path3}.url`, errors);
+    checkUrl(action.url, `${path4}.url`, errors);
   } else {
-    checkString(action.appid, `${path3}.appid`, errors);
-    checkString(action.pagepath, `${path3}.pagepath`, errors);
+    checkString(action.appid, `${path4}.appid`, errors);
+    checkString(action.pagepath, `${path4}.pagepath`, errors);
   }
 }
 function checkSource(source2, errors, warnings) {
@@ -9017,22 +9019,22 @@ function checkHorizontalList(list, errors, warnings) {
     );
   }
   list.forEach((item, index) => {
-    const path3 = `template_card.horizontal_content_list[${index}]`;
+    const path4 = `template_card.horizontal_content_list[${index}]`;
     if (!isPlainObject(item)) {
-      errors.push(error("E_HORIZONTAL_ITEM", `${path3} must be an object`, path3));
+      errors.push(error("E_HORIZONTAL_ITEM", `${path4} must be an object`, path4));
       return;
     }
-    if (checkString(item.keyname, `${path3}.keyname`, errors)) {
-      checkCharLimit(item.keyname, 5, `${path3}.keyname`, errors, warnings);
+    if (checkString(item.keyname, `${path4}.keyname`, errors)) {
+      checkCharLimit(item.keyname, 5, `${path4}.keyname`, errors, warnings);
     }
-    if (checkString(item.value, `${path3}.value`, errors, { required: false })) {
-      checkCharLimit(item.value, 26, `${path3}.value`, errors, warnings);
+    if (checkString(item.value, `${path4}.value`, errors, { required: false })) {
+      checkCharLimit(item.value, 26, `${path4}.value`, errors, warnings);
     }
     if (item.type === void 0) {
-    } else if (item.type === 1) checkUrl(item.url, `${path3}.url`, errors);
-    else if (item.type === 2) checkString(item.media_id, `${path3}.media_id`, errors);
-    else if (item.type === 3) checkString(item.userid, `${path3}.userid`, errors);
-    else errors.push(error("E_HORIZONTAL_TYPE", `${path3}.type must be 1, 2, or 3 when set`, `${path3}.type`));
+    } else if (item.type === 1) checkUrl(item.url, `${path4}.url`, errors);
+    else if (item.type === 2) checkString(item.media_id, `${path4}.media_id`, errors);
+    else if (item.type === 3) checkString(item.userid, `${path4}.userid`, errors);
+    else errors.push(error("E_HORIZONTAL_TYPE", `${path4}.type must be 1, 2, or 3 when set`, `${path4}.type`));
   });
 }
 function checkJumpList(list, errors, warnings) {
@@ -9047,20 +9049,20 @@ function checkJumpList(list, errors, warnings) {
     );
   }
   list.forEach((item, index) => {
-    const path3 = `template_card.jump_list[${index}]`;
+    const path4 = `template_card.jump_list[${index}]`;
     if (!isPlainObject(item)) {
-      errors.push(error("E_JUMP_ITEM", `${path3} must be an object`, path3));
+      errors.push(error("E_JUMP_ITEM", `${path4} must be an object`, path4));
       return;
     }
-    if (checkString(item.title, `${path3}.title`, errors)) {
-      checkCharLimit(item.title, 13, `${path3}.title`, errors, warnings);
+    if (checkString(item.title, `${path4}.title`, errors)) {
+      checkCharLimit(item.title, 13, `${path4}.title`, errors, warnings);
     }
     if (item.type === void 0 || item.type === 0) {
-    } else if (item.type === 1) checkUrl(item.url, `${path3}.url`, errors);
+    } else if (item.type === 1) checkUrl(item.url, `${path4}.url`, errors);
     else if (item.type === 2) {
-      checkString(item.appid, `${path3}.appid`, errors);
-      checkString(item.pagepath, `${path3}.pagepath`, errors, { required: false });
-    } else errors.push(error("E_JUMP_TYPE", `${path3}.type must be 0, 1, or 2`, `${path3}.type`));
+      checkString(item.appid, `${path4}.appid`, errors);
+      checkString(item.pagepath, `${path4}.pagepath`, errors, { required: false });
+    } else errors.push(error("E_JUMP_TYPE", `${path4}.type must be 0, 1, or 2`, `${path4}.type`));
   });
 }
 function checkImageTextArea(area, errors, warnings) {
@@ -9092,15 +9094,15 @@ function checkVerticalList(list, errors, warnings) {
     errors.push(error("E_VERTICAL_COUNT", "template_card.vertical_content_list supports at most 4 items", "template_card.vertical_content_list"));
   }
   list.forEach((item, index) => {
-    const path3 = `template_card.vertical_content_list[${index}]`;
+    const path4 = `template_card.vertical_content_list[${index}]`;
     if (!isPlainObject(item)) {
-      errors.push(error("E_VERTICAL_ITEM", `${path3} must be an object`, path3));
+      errors.push(error("E_VERTICAL_ITEM", `${path4} must be an object`, path4));
       return;
     }
-    if (checkString(item.title, `${path3}.title`, errors)) {
-      checkCharLimit(item.title, 26, `${path3}.title`, errors, warnings);
+    if (checkString(item.title, `${path4}.title`, errors)) {
+      checkCharLimit(item.title, 26, `${path4}.title`, errors, warnings);
     }
-    if (item.desc !== void 0) checkCharLimit(item.desc, 112, `${path3}.desc`, errors, warnings);
+    if (item.desc !== void 0) checkCharLimit(item.desc, 112, `${path4}.desc`, errors, warnings);
   });
 }
 function validateTemplateCard(message, errors, warnings) {
@@ -9321,7 +9323,7 @@ async function sendToWeCom({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "User-Agent": "dmao-wecom-notifier"
+          "User-Agent": "wecom-notifier"
         },
         body,
         signal: controller.signal
@@ -9391,12 +9393,12 @@ function fitText(value, max) {
 function fitBlock(value, max) {
   return fitChars(String(value ?? "").trim(), max);
 }
-function requireHttpUrl(value, path3, fallback) {
+function requireHttpUrl(value, path4, fallback) {
   const url = value || fallback;
   if (!isHttpUrl(url)) {
-    throw new ConfigError(`A valid http(s) URL is required for ${path3}`, {
+    throw new ConfigError(`A valid http(s) URL is required for ${path4}`, {
       code: "E_URL_REQUIRED",
-      path: path3,
+      path: path4,
       hint: "Set link-url, or use a GitHub event that provides a detail URL."
     });
   }
@@ -10082,6 +10084,392 @@ function getPreset(name, { ctx, inputs = {}, eventName } = {}) {
   return preset(ctx, inputs);
 }
 
+// src/preview/html.mjs
+import { mkdirSync, writeFileSync } from "node:fs";
+import path2 from "node:path";
+import process2 from "node:process";
+var ESCAPES = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+};
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/gu, (char) => ESCAPES[char]);
+}
+function attr(value) {
+  return escapeHtml(value).replaceAll("\n", "&#10;");
+}
+function isUrl(value) {
+  if (typeof value !== "string") return false;
+  if (/^https?:\/\//iu.test(value)) return true;
+  if (/^data:image\/[a-z+]+;base64,/iu.test(value)) return true;
+  return false;
+}
+function link(href, label, className = "") {
+  if (!isUrl(href)) return escapeHtml(label ?? href);
+  return `<a class="${className}" href="${attr(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label ?? href)}</a>`;
+}
+function renderMarkdown(text) {
+  const source2 = String(text ?? "");
+  const lines = source2.split(/\r?\n/u);
+  const out = [];
+  let listOpen = false;
+  let inFence = false;
+  let fenceLines = [];
+  const closeList = () => {
+    if (listOpen) {
+      out.push("</ul>");
+      listOpen = false;
+    }
+  };
+  const inline = (value) => escapeHtml(value).replace(/`([^`]+)`/gu, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/gu, "<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/gu, "$1<em>$2</em>").replace(
+    /\[([^\]]+)\]\(([^)\s]+)\)/gu,
+    (_match, label, href) => isUrl(href) ? `<a href="${attr(href)}" target="_blank" rel="noopener noreferrer">${label}</a>` : label
+  ).replace(
+    /&lt;font color=(?:"|&quot;)(info|comment|warning)(?:"|&quot;)&gt;([\s\S]*?)&lt;\/font&gt;/gu,
+    (_match, tone, body) => `<span class="tone-${tone}">${body}</span>`
+  );
+  for (const line of lines) {
+    if (line.trimStart().startsWith("```")) {
+      if (inFence) {
+        out.push(`<pre class="code"><code>${escapeHtml(fenceLines.join("\n"))}</code></pre>`);
+        fenceLines = [];
+        inFence = false;
+      } else {
+        closeList();
+        inFence = true;
+      }
+      continue;
+    }
+    if (inFence) {
+      fenceLines.push(line);
+      continue;
+    }
+    if (!line.trim()) {
+      closeList();
+      continue;
+    }
+    const heading = /^(#{1,6})\s+(.*)$/u.exec(line);
+    if (heading) {
+      closeList();
+      const level = Math.min(heading[1].length + 2, 6);
+      out.push(`<h${level} class="md-h">${inline(heading[2])}</h${level}>`);
+      continue;
+    }
+    if (/^(-{3,}|\*{3,})$/u.test(line.trim())) {
+      closeList();
+      out.push("<hr />");
+      continue;
+    }
+    const quote = /^>\s?(.*)$/u.exec(line);
+    if (quote) {
+      closeList();
+      out.push(`<blockquote>${inline(quote[1])}</blockquote>`);
+      continue;
+    }
+    const bullet = /^\s*[-*+]\s+(.*)$/u.exec(line);
+    if (bullet) {
+      if (!listOpen) {
+        out.push("<ul>");
+        listOpen = true;
+      }
+      out.push(`<li>${inline(bullet[1])}</li>`);
+      continue;
+    }
+    closeList();
+    out.push(`<p>${inline(line)}</p>`);
+  }
+  closeList();
+  if (inFence && fenceLines.length > 0) {
+    out.push(`<pre class="code"><code>${escapeHtml(fenceLines.join("\n"))}</code></pre>`);
+  }
+  return out.join("\n");
+}
+function renderTextBody(content) {
+  return `<div class="bubble text"><div class="prewrap">${escapeHtml(content)}</div></div>`;
+}
+function renderNews(articles) {
+  const items = Array.isArray(articles) ? articles : [];
+  const cards = items.map((article) => {
+    const raw = isPlainObject(article) ? article : {};
+    const pic = isUrl(raw.picurl) ? `<img class="news-pic" src="${attr(raw.picurl)}" alt="" loading="lazy" />` : '<div class="news-pic placeholder">无图</div>';
+    return `<article class="news-card">
+  ${pic}
+  <div class="news-body">
+    <h3>${escapeHtml(raw.title ?? "")}</h3>
+    ${raw.description ? `<p>${escapeHtml(raw.description)}</p>` : ""}
+    ${isUrl(raw.url) ? link(raw.url, "阅读原文", "news-link") : ""}
+  </div>
+</article>`;
+  }).join("\n");
+  return `<div class="bubble news"><div class="app-name">图文消息 · ${items.length} 条</div>${cards}</div>`;
+}
+function renderHorizontalList(list) {
+  if (!Array.isArray(list) || list.length === 0) return "";
+  const rows = list.map((entry) => {
+    const raw = isPlainObject(entry) ? entry : {};
+    const value = raw.value ? isUrl(raw.value) ? link(raw.value, raw.value) : escapeHtml(raw.value) : escapeHtml(raw.value);
+    return `<div class="kv"><span class="k">${escapeHtml(raw.keyname ?? raw.key ?? "")}</span><span class="v">${value}</span></div>`;
+  }).join("");
+  return `<div class="kv-list">${rows}</div>`;
+}
+function renderVerticalList(list) {
+  if (!Array.isArray(list) || list.length === 0) return "";
+  const rows = list.map((entry) => {
+    const raw = isPlainObject(entry) ? entry : {};
+    const body = raw.desc ? `<p>${escapeHtml(raw.desc)}</p>` : "";
+    return `<section class="vitem"><h4>${escapeHtml(raw.title ?? "")}</h4>${body}</section>`;
+  }).join("");
+  return `<div class="v-list">${rows}</div>`;
+}
+function renderJumpList(list) {
+  if (!Array.isArray(list) || list.length === 0) return "";
+  const rows = list.map((entry) => {
+    const raw = isPlainObject(entry) ? entry : {};
+    const label = escapeHtml(raw.title ?? "打开");
+    return `<li>${isUrl(raw.url) ? link(raw.url, label) : label}<span class="type">${escapeHtml(raw.type ?? "")}</span></li>`;
+  }).join("");
+  return `<ul class="jump-list">${rows}</ul>`;
+}
+function renderQuoteArea(quote) {
+  if (!isPlainObject(quote) || !quote.quote_text) return "";
+  const title = quote.title ? `<div class="quote-title">${escapeHtml(quote.title)}</div>` : "";
+  return `<div class="quote">
+  <div class="quote-bar"></div>
+  <div class="quote-body">${title}<div class="prewrap">${escapeHtml(quote.quote_text)}</div></div>
+</div>`;
+}
+function renderSource(source2) {
+  if (!isPlainObject(source2)) return "";
+  const color = Number.isInteger(source2.desc_color) ? `tone-${source2.desc_color}` : "";
+  return `<div class="card-source ${color}">${escapeHtml(source2.desc ?? "")}</div>`;
+}
+function renderTextNotice(card) {
+  const emphasis = isPlainObject(card.emphasis_content) ? `<div class="emphasis"><span class="num">${escapeHtml(card.emphasis_content.title ?? "")}</span><span class="sub">${escapeHtml(card.emphasis_content.desc ?? "")}</span></div>` : "";
+  const action = isPlainObject(card.card_action) && card.card_action.url ? `<div class="card-action">${link(card.card_action.url, "查看详情")}</div>` : "";
+  return `<div class="bubble card">
+  <div class="card-head">${escapeHtml(card.main_title?.title ?? "")}${renderSource(card.source)}</div>
+  ${card.main_title?.desc ? `<p class="card-sub">${escapeHtml(card.main_title.desc)}</p>` : ""}
+  ${emphasis}
+  ${card.sub_title_text ? `<div class="card-subtitle">${escapeHtml(card.sub_title_text)}</div>` : ""}
+  ${renderHorizontalList(card.horizontal_content_list)}
+  ${renderJumpList(card.jump_list)}
+  ${action}
+</div>`;
+}
+function renderNewsNotice(card) {
+  const image = isPlainObject(card.card_image) && isUrl(card.card_image.url) ? `<div class="card-image"><img src="${attr(card.card_image.url)}" alt="" loading="lazy" /></div>` : '<div class="card-image placeholder">card_image 为空</div>';
+  const textArea = isPlainObject(card.image_text_area) ? `<div class="image-text">
+  <h4>${escapeHtml(card.image_text_area.title ?? "")}</h4>
+  ${card.image_text_area.desc ? `<p>${escapeHtml(card.image_text_area.desc)}</p>` : ""}
+</div>` : "";
+  const action = isPlainObject(card.card_action) && card.card_action.url ? `<div class="card-action">${link(card.card_action.url, "查看详情")}</div>` : "";
+  return `<div class="bubble card news-notice">
+  ${image}
+  <div class="card-head">${escapeHtml(card.main_title?.title ?? "")}${renderSource(card.source)}</div>
+  ${card.main_title?.desc ? `<p class="card-sub">${escapeHtml(card.main_title.desc)}</p>` : ""}
+  ${textArea}
+  ${renderVerticalList(card.vertical_content_list)}
+  ${renderQuoteArea(card.quote_area)}
+  ${renderJumpList(card.jump_list)}
+  ${action}
+</div>`;
+}
+function renderTemplateCard(card) {
+  if (!isPlainObject(card)) return '<div class="bubble card">template_card 为空</div>';
+  if (card.card_type === "news_notice") return renderNewsNotice(card);
+  return renderTextNotice(card);
+}
+function renderImageBody(image) {
+  const base64 = image?.base64;
+  const md5 = image?.md5;
+  if (!base64) return '<div class="bubble card">image 缺少 base64</div>';
+  const dataUrl = `data:image/png;base64,${base64}`;
+  return `<div class="bubble card"><div class="card-image"><img src="${attr(dataUrl)}" alt="" /></div>
+  <div class="kv-list"><div class="kv"><span class="k">md5</span><span class="v">${escapeHtml(md5 ?? "")}</span></div></div></div>`;
+}
+function renderBody(message) {
+  switch (message.msgtype) {
+    case "text":
+      return renderTextBody(message.text?.content ?? "");
+    case "markdown":
+    case "markdown_v2":
+      return `<div class="bubble markdown">${renderMarkdown(message[message.msgtype]?.content ?? "")}</div>`;
+    case "news":
+      return renderNews(message.news?.articles);
+    case "template_card":
+      return renderTemplateCard(message.template_card);
+    case "image":
+      return renderImageBody(message.image);
+    default:
+      return `<div class="bubble card"><div class="unknown">未支持的 msgtype: ${escapeHtml(message.msgtype ?? "")}</div>
+  <pre class="code">${escapeHtml(JSON.stringify(message, null, 2))}</pre></div>`;
+  }
+}
+function warningRows(warnings) {
+  if (!Array.isArray(warnings) || warnings.length === 0) {
+    return '<p class="ok">无 warning</p>';
+  }
+  return `<ul class="warnings">${warnings.map(
+    (warning3) => `<li><code>${escapeHtml(warning3.code ?? "W")}</code> <span class="path">${escapeHtml(warning3.path ?? "")}</span><div>${escapeHtml(warning3.message ?? "")}</div></li>`
+  ).join("")}</ul>`;
+}
+var STYLE = `
+:root {
+  color-scheme: light dark;
+  --bg: #f2f3f5;
+  --panel: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --accent: #07c160;
+  --bubble: #ffffff;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111315;
+    --panel: #1a1d21;
+    --ink: #e8eaed;
+    --muted: #9aa0a6;
+    --line: #2c3035;
+    --bubble: #23262b;
+    --shadow: 0 1px 3px rgba(0,0,0,.5);
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 28px 20px 60px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+header.page { max-width: 1080px; margin: 0 auto 18px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: baseline; }
+header.page h1 { font-size: 16px; margin: 0; font-weight: 600; }
+.meta { color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 12px; }
+.meta code { color: var(--ink); }
+.layout { max-width: 1080px; margin: 0 auto; display: grid; gap: 20px; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.phone { background: var(--panel); border-radius: 22px; padding: 18px 14px; box-shadow: var(--shadow); }
+.phone-head { display: flex; align-items: center; gap: 8px; padding: 0 4px 12px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.chat { padding-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+.bubble { background: var(--bubble); border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.prewrap { white-space: pre-wrap; word-break: break-word; }
+.markdown p { margin: 0 0 6px; }
+.markdown p:last-child { margin-bottom: 0; }
+.markdown .md-h { margin: 4px 0 8px; font-size: 15px; }
+.markdown code, .code { background: rgba(127,127,127,.14); border-radius: 4px; padding: 1px 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+.markdown pre.code { padding: 10px; overflow: auto; }
+.markdown blockquote { margin: 6px 0; padding: 2px 0 2px 10px; border-left: 3px solid var(--line); color: var(--muted); }
+.markdown ul { margin: 4px 0; padding-left: 18px; }
+.tone-info { color: #3b82f6; }
+.tone-comment { color: var(--muted); }
+.tone-warning { color: #ef4444; }
+.news-card { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 10px; }
+.news-card:first-of-type { margin-top: 6px; }
+.news-pic { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: rgba(127,127,127,.12); }
+.news-pic.placeholder, .card-image.placeholder { display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+.news-body { padding: 10px 12px 12px; }
+.news-body h3 { font-size: 14px; margin: 0 0 6px; }
+.news-body p { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
+.news-link, .card-action a, .jump-list a { color: var(--accent); text-decoration: none; }
+.app-name { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+.card { padding: 0; overflow: hidden; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px 0; font-weight: 600; }
+.card-source { font-size: 11px; font-weight: 400; color: var(--muted); }
+.card-source.tone-2 { color: #ef4444; }
+.card-source.tone-3 { color: var(--accent); }
+.card-sub { margin: 4px 14px 0; color: var(--muted); font-size: 12px; }
+.card-subtitle { margin: 10px 14px 0; font-size: 12px; color: var(--muted); }
+.emphasis { margin: 10px 14px 0; display: flex; align-items: baseline; gap: 8px; }
+.emphasis .num { font-size: 22px; font-weight: 600; }
+.emphasis .sub { color: var(--muted); font-size: 12px; }
+.kv-list { margin: 10px 14px 0; border-top: 1px solid var(--line); }
+.kv { display: flex; gap: 12px; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.kv .k { color: var(--muted); flex: 0 0 auto; }
+.kv .v { text-align: right; word-break: break-all; }
+.v-list { margin: 10px 14px 0; }
+.vitem h4 { margin: 0; font-size: 13px; }
+.vitem p { margin: 2px 0 8px; color: var(--muted); font-size: 12px; }
+.quote { display: flex; gap: 10px; margin: 12px 14px 0; }
+.quote-bar { width: 3px; border-radius: 2px; background: var(--line); }
+.quote-title { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.quote-body { font-size: 12px; }
+.card-image img { display: block; width: 100%; max-height: 320px; object-fit: cover; }
+.image-text { padding: 10px 14px 0; }
+.image-text h4 { margin: 0 0 4px; font-size: 13px; }
+.image-text p { margin: 0; color: var(--muted); font-size: 12px; }
+.jump-list { list-style: none; margin: 10px 14px 0; padding: 0; border-top: 1px solid var(--line); }
+.jump-list li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.jump-list .type { color: var(--muted); }
+.card-action { margin: 12px 14px 14px; }
+.card-action a { display: block; text-align: center; padding: 8px; border-radius: 8px; background: rgba(7,193,96,.1); font-size: 13px; }
+.panel { background: var(--panel); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; }
+.panel + .panel { margin-top: 16px; }
+pre.raw { margin: 0; padding: 12px; background: rgba(127,127,127,.08); border-radius: 10px; overflow: auto; max-height: 460px; font-size: 12px; }
+.warnings { margin: 0; padding-left: 18px; font-size: 12px; }
+.warnings li { margin-bottom: 8px; }
+.warnings .path { color: var(--muted); }
+.ok { color: var(--accent); font-size: 12px; margin: 0; }
+.unknown { font-size: 12px; color: #ef4444; margin-bottom: 8px; }
+footer.page { max-width: 1080px; margin: 26px auto 0; color: var(--muted); font-size: 11px; }
+`;
+function renderPreviewHtml({ message, eventName = "", origin = "", warnings = [], bytes, generatedAt = /* @__PURE__ */ new Date() } = {}) {
+  const body = renderBody(isPlainObject(message) ? message : {});
+  const raw = JSON.stringify(message ?? {}, null, 2);
+  const size = bytes ?? Buffer.byteLength(raw, "utf8");
+  return `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>wecom-notifier preview · ${escapeHtml(message?.msgtype ?? "message")}</title>
+<style>${STYLE}</style>
+</head>
+<body>
+<header class="page">
+  <h1>wecom-notifier preview</h1>
+  <div class="meta">
+    <span>event <code>${escapeHtml(eventName || "unknown")}</code></span>
+    <span>origin <code>${escapeHtml(origin || "-")}</code></span>
+    <span>msgtype <code>${escapeHtml(message?.msgtype ?? "-")}</code></span>
+    <span><code>${size}</code> bytes</span>
+    <span><code>${warnings.length}</code> warning(s)</span>
+  </div>
+</header>
+<main class="layout">
+  <section class="phone">
+    <div class="phone-head"><span class="dot"></span>企业微信 · 本地预览</div>
+    <div class="chat">${body}</div>
+  </section>
+  <div>
+    <section class="panel">
+      <h2>Warnings</h2>
+      ${warningRows(warnings)}
+    </section>
+    <section class="panel">
+      <h2>Payload</h2>
+      <pre class="raw">${escapeHtml(raw)}</pre>
+    </section>
+  </div>
+</main>
+<footer class="page">generated ${escapeHtml(generatedAt.toISOString())} · 仅本地预览，字段上限与客户端渲染以企业微信为准</footer>
+</body>
+</html>
+`;
+}
+function writePreviewHtml({ file, cwd = process2.cwd(), ...options }) {
+  const target = path2.isAbsolute(file) ? file : path2.resolve(cwd, file);
+  mkdirSync(path2.dirname(target), { recursive: true });
+  writeFileSync(target, renderPreviewHtml(options), "utf8");
+  return target;
+}
+
 // src/template/expression.mjs
 var UNSAFE_KEYS2 = /* @__PURE__ */ new Set(["__proto__", "constructor", "prototype"]);
 var FILTERS = {
@@ -10549,8 +10937,21 @@ var MAX_NODES = 1e4;
 var MAX_ITERATIONS = 100;
 var DIRECTIVES = /* @__PURE__ */ new Set(["$if", "$each", "$item", "$limit", "$as", "$join", "$prefix", "$suffix"]);
 var IDENTIFIER_RE = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
-function fail(message, path3, hint) {
-  throw new TemplateError(message, { code: "E_TEMPLATE_RENDER", path: path3, hint });
+var ALIASES = Object.freeze({
+  when: "$if",
+  for: "$each",
+  item: "$item",
+  as: "$as",
+  limit: "$limit",
+  join: "$join",
+  prefix: "$prefix",
+  suffix: "$suffix"
+});
+var FOR_KEYS = /* @__PURE__ */ new Set(["for", "item", "as", "limit", "join", "prefix", "suffix"]);
+var VARIANT_KEYS = /* @__PURE__ */ new Set(["by", "key", "cases", "default"]);
+var DIRECTIVE_HINT = "Directives are $if (alias when), $each (alias for), $item, $limit, $as, $join, $prefix, $suffix.";
+function fail(message, path4, hint) {
+  throw new TemplateError(message, { code: "E_TEMPLATE_RENDER", path: path4, hint });
 }
 function createState() {
   return {
@@ -10559,53 +10960,53 @@ function createState() {
     warnings: []
   };
 }
-function tick(state, path3) {
+function tick(state, path4) {
   state.nodes += 1;
   if (state.nodes > MAX_NODES) {
-    fail(`Template expanded to more than ${MAX_NODES} nodes`, path3, "Check for recursive or unexpectedly large $each loops.");
+    fail(`Template expanded to more than ${MAX_NODES} nodes`, path4, "Check for recursive or unexpectedly large $each loops.");
   }
 }
-function evaluateDirective(value, context, locals, path3) {
+function evaluateDirective(value, context, locals, path4) {
   if (typeof value === "boolean" || typeof value === "number") return value;
   if (value === null || value === void 0) return value;
   if (typeof value !== "string") {
-    fail("Directive must be an expression string", path3, 'Use a string such as "$each: commits" or a literal value.');
+    fail("Directive must be an expression string", path4, 'Use a string such as "$each: commits" or a literal value.');
   }
   const text = value.trim();
   if (!text) return void 0;
   const unwrapped = /^\{\{([\s\S]*)\}\}$/u.exec(text);
   return evaluate(unwrapped ? unwrapped[1] : text, context, locals);
 }
-function renderEach(node, state, context, locals, path3) {
+function renderEach(node, state, context, locals, path4) {
   const allowed = /* @__PURE__ */ new Set(["$each", "$item", "$limit", "$as", "$join", "$prefix", "$suffix"]);
   for (const key of Object.keys(node)) {
     if (key.startsWith("$") && !allowed.has(key)) {
-      fail(`Directive "${key}" is not allowed together with $each`, `${path3}.${key}`, "Use $if on a parent object or inside $item.");
+      fail(`Directive "${key}" is not allowed together with $each`, `${path4}.${key}`, "Use $if on a parent object or inside $item.");
     }
   }
   if (!Object.hasOwn(node, "$item")) {
-    fail("$each requires a sibling $item template", path3, "Add $item with the template for each element.");
+    fail("$each requires a sibling $item template", path4, "Add $item with the template for each element.");
   }
-  const source2 = evaluateDirective(node.$each, context, locals, `${path3}.$each`);
+  const source2 = evaluateDirective(node.$each, context, locals, `${path4}.$each`);
   let items;
   if (source2 === void 0 || source2 === null) items = [];
   else if (Array.isArray(source2)) items = source2;
   else {
-    fail(`$each expected an array, got ${typeof source2}`, `${path3}.$each`, "Use a path that points to a list, such as commits.");
+    fail(`$each expected an array, got ${typeof source2}`, `${path4}.$each`, "Use a path that points to a list, such as commits.");
   }
   let limit = MAX_ITERATIONS;
   if (Object.hasOwn(node, "$limit")) {
-    const raw = evaluateDirective(node.$limit, context, locals, `${path3}.$limit`);
+    const raw = evaluateDirective(node.$limit, context, locals, `${path4}.$limit`);
     const num = Number(raw);
     if (!Number.isInteger(num) || num < 1) {
-      fail("$limit must be a positive integer", `${path3}.$limit`);
+      fail("$limit must be a positive integer", `${path4}.$limit`);
     }
     limit = Math.min(num, MAX_ITERATIONS);
   }
   if (items.length > limit) {
     state.warnings.push({
       code: "W_EACH_LIMIT",
-      path: `${path3}.$each`,
+      path: `${path4}.$each`,
       message: `$each produced ${items.length} items; only the first ${limit} are used (hard limit ${MAX_ITERATIONS}).`
     });
     items = items.slice(0, limit);
@@ -10615,7 +11016,7 @@ function renderEach(node, state, context, locals, path3) {
     const raw = node.$as;
     const name = typeof raw === "string" ? raw.trim() : "";
     if (!IDENTIFIER_RE.test(name)) {
-      fail("$as must be a valid identifier", `${path3}.$as`, "For example: $as: commit");
+      fail("$as must be a valid identifier", `${path4}.$as`, "For example: $as: commit");
     }
     alias = name;
   }
@@ -10623,36 +11024,129 @@ function renderEach(node, state, context, locals, path3) {
   const hasPrefix = Object.hasOwn(node, "$prefix");
   const hasSuffix = Object.hasOwn(node, "$suffix");
   if (!hasJoin && (hasPrefix || hasSuffix)) {
-    fail("$prefix/$suffix require $join", path3, "Use $join to create a string, or remove $prefix/$suffix.");
+    fail("$prefix/$suffix require $join", path4, "Use $join to create a string, or remove $prefix/$suffix.");
   }
   const rendered = [];
   for (const item of items) {
     const itemLocals = { ...locals, [alias]: item };
-    const value = renderValue(node.$item, state, context, itemLocals, `${path3}.$item`);
+    const value = renderValue(node.$item, state, context, itemLocals, `${path4}.$item`);
     if (value === void 0) continue;
     rendered.push(value);
   }
   if (!hasJoin) return rendered;
   const separator = stringifyScalar(
-    renderValue(node.$join, state, context, locals, `${path3}.$join`)
+    renderValue(node.$join, state, context, locals, `${path4}.$join`)
   );
-  const prefix = hasPrefix ? stringifyScalar(renderValue(node.$prefix, state, context, locals, `${path3}.$prefix`)) : "";
-  const suffix = hasSuffix ? stringifyScalar(renderValue(node.$suffix, state, context, locals, `${path3}.$suffix`)) : "";
+  const prefix = hasPrefix ? stringifyScalar(renderValue(node.$prefix, state, context, locals, `${path4}.$prefix`)) : "";
+  const suffix = hasSuffix ? stringifyScalar(renderValue(node.$suffix, state, context, locals, `${path4}.$suffix`)) : "";
   const body = rendered.map((item) => stringifyScalar(item)).join(separator);
   return `${prefix}${body}${suffix}`;
 }
-function renderObject(node, state, context, locals, path3) {
-  const keys = Object.keys(node);
-  const hasEach = Object.hasOwn(node, "$each");
-  const hasIf = Object.hasOwn(node, "$if");
+function withoutVariants(node) {
+  const out = {};
+  for (const [key, value] of Object.entries(node)) {
+    if (key === "variants") continue;
+    out[key] = value;
+  }
+  return out;
+}
+function resolveVariants(node, state, context, locals, path4) {
+  const spec = node.variants;
+  const specPath = `${path4}.variants`;
+  if (!isPlainObject(spec)) {
+    fail('"variants" must be a mapping', specPath, "Use variants: {by: <path>, cases: {<value>: {...}}, default: {...}}.");
+  }
+  for (const key2 of Object.keys(spec)) {
+    if (!VARIANT_KEYS.has(key2)) {
+      fail(`Unknown "variants" key "${key2}"`, `${specPath}.${key2}`, "Allowed keys are by, cases, and default.");
+    }
+  }
+  const selector = spec.by ?? spec.key;
+  if (selector === void 0 || selector === null || selector === "") {
+    fail('"variants" requires "by"', specPath, "Point it at a context path, such as workflow_run.conclusion.");
+  }
+  const cases = spec.cases ?? {};
+  if (!isPlainObject(cases)) {
+    fail('"variants.cases" must be a mapping', `${specPath}.cases`, "Each key is a possible selector value.");
+  }
+  const raw = evaluateDirective(selector, context, locals, `${specPath}.by`);
+  const key = raw === void 0 || raw === null ? "" : stringifyScalar(raw);
+  const matched = Object.hasOwn(cases, key);
+  const chosen = matched ? cases[key] : spec.default;
+  if (chosen === void 0 || chosen === null) {
+    if (!matched && !Object.hasOwn(spec, "default")) {
+      state.warnings.push({
+        code: "W_VARIANT_UNMATCHED",
+        path: specPath,
+        message: `variants had no case for "${key}" and no default; the object was left without that branch.`
+      });
+    }
+    return withoutVariants(node);
+  }
+  if (!isPlainObject(chosen)) {
+    fail(
+      `"variants" selected a branch for "${key}" that is not a mapping`,
+      matched ? `${specPath}.cases.${key}` : `${specPath}.default`
+    );
+  }
+  return deepMerge(withoutVariants(node), chosen, specPath);
+}
+function normalizeDirectives(node, path4) {
+  const hasFor = Object.hasOwn(node, "for");
+  const hasWhen = Object.hasOwn(node, "when");
+  if (!hasFor && !hasWhen) return node;
+  if (hasFor && Object.hasOwn(node, "$each")) {
+    fail('Use either "for" or "$each", not both', path4, 'They are the same directive; keep the readable "for" form.');
+  }
+  if (hasWhen && Object.hasOwn(node, "$if")) {
+    fail('Use either "when" or "$if", not both', path4, 'They are the same directive; keep the readable "when" form.');
+  }
+  if (hasFor) {
+    const out2 = { $each: node.for };
+    for (const [key, value] of Object.entries(node)) {
+      if (key === "for") continue;
+      if (!FOR_KEYS.has(key)) {
+        fail(
+          `"${key}" cannot sit next to "for"`,
+          `${path4}.${key}`,
+          'A "for" block only accepts for, item, as, limit, join, prefix, and suffix. Move other fields inside item.'
+        );
+      }
+      out2[ALIASES[key]] = value;
+    }
+    if (!Object.hasOwn(out2, "$item")) {
+      fail('"for" requires an "item" template', path4, "Add item: { ... } describing one element.");
+    }
+    return out2;
+  }
+  const out = {};
+  for (const [key, value] of Object.entries(node)) {
+    if (key === "when") out.$if = value;
+    else out[key] = value;
+  }
+  return out;
+}
+function renderObject(node, state, context, locals, path4) {
+  let current = node;
+  if (Object.hasOwn(current, "variants")) {
+    current = resolveVariants(current, state, context, locals, path4);
+  }
+  current = normalizeDirectives(current, path4);
+  const keys = Object.keys(current);
+  const hasEach = Object.hasOwn(current, "$each");
+  const hasIf = Object.hasOwn(current, "$if");
   if (hasEach) {
     if (hasIf) {
-      fail("$each and $if cannot be combined on the same object", path3, "Move $if inside $item, or use two nested objects.");
+      fail(
+        "for/$each and when/$if cannot be combined on the same object",
+        path4,
+        "Move the condition inside item, or nest the object one level deeper."
+      );
     }
-    return renderEach(node, state, context, locals, path3);
+    return renderEach(current, state, context, locals, path4);
   }
   if (hasIf) {
-    const condition = evaluateCondition(node.$if, context, locals);
+    const condition = evaluateCondition(current.$if, context, locals);
     if (!condition) return void 0;
   }
   const out = {};
@@ -10660,27 +11154,27 @@ function renderObject(node, state, context, locals, path3) {
     if (key.startsWith("$")) {
       if (key === "$if" && hasIf) continue;
       if (!DIRECTIVES.has(key)) {
-        fail(`Unknown directive "${key}"`, `${path3}.${key}`, "Directives are $if, $each, $item, $limit, $as, $join, $prefix, $suffix.");
+        fail(`Unknown directive "${key}"`, `${path4}.${key}`, DIRECTIVE_HINT);
       }
-      fail(`Directive "${key}" is not valid here`, `${path3}.${key}`);
+      fail(`Directive "${key}" is not valid here`, `${path4}.${key}`);
     }
-    const value = renderValue(node[key], state, context, locals, `${path3}.${key}`);
+    const value = renderValue(current[key], state, context, locals, `${path4}.${key}`);
     if (value === void 0) continue;
     out[key] = value;
   }
   return out;
 }
-function renderArray(node, state, context, locals, path3) {
+function renderArray(node, state, context, locals, path4) {
   const out = [];
   for (let index = 0; index < node.length; index += 1) {
-    const value = renderValue(node[index], state, context, locals, `${path3}[${index}]`);
+    const value = renderValue(node[index], state, context, locals, `${path4}[${index}]`);
     if (value === void 0) continue;
     out.push(value);
   }
   return out;
 }
-function renderValue(value, state, context, locals, path3) {
-  tick(state, path3);
+function renderValue(value, state, context, locals, path4) {
+  tick(state, path4);
   if (value === null || value === void 0) return value;
   if (typeof value === "string") {
     try {
@@ -10689,7 +11183,7 @@ function renderValue(value, state, context, locals, path3) {
       if (error2 instanceof TemplateError) {
         throw new TemplateError(error2.message, {
           code: error2.code,
-          path: path3,
+          path: path4,
           hint: error2.hint,
           cause: error2
         });
@@ -10699,18 +11193,18 @@ function renderValue(value, state, context, locals, path3) {
   }
   if (Array.isArray(value)) {
     state.depth += 1;
-    if (state.depth > MAX_DEPTH) fail(`Template nesting exceeds ${MAX_DEPTH}`, path3);
+    if (state.depth > MAX_DEPTH) fail(`Template nesting exceeds ${MAX_DEPTH}`, path4);
     try {
-      return renderArray(value, state, context, locals, path3);
+      return renderArray(value, state, context, locals, path4);
     } finally {
       state.depth -= 1;
     }
   }
   if (isPlainObject(value)) {
     state.depth += 1;
-    if (state.depth > MAX_DEPTH) fail(`Template nesting exceeds ${MAX_DEPTH}`, path3);
+    if (state.depth > MAX_DEPTH) fail(`Template nesting exceeds ${MAX_DEPTH}`, path4);
     try {
-      return renderObject(value, state, context, locals, path3);
+      return renderObject(value, state, context, locals, path4);
     } finally {
       state.depth -= 1;
     }
@@ -10730,7 +11224,7 @@ var OUTPUT_LIMIT = 64 * 1024;
 var DRY_RUN_PRINT_LIMIT = 16 * 1024;
 function readEventFile(eventPath, cwd) {
   if (!eventPath) return {};
-  const resolved = path2.isAbsolute(eventPath) ? eventPath : path2.resolve(cwd, eventPath);
+  const resolved = path3.isAbsolute(eventPath) ? eventPath : path3.resolve(cwd, eventPath);
   if (!existsSync2(resolved)) {
     throw new ConfigError(`Event payload file not found: ${eventPath}`, {
       code: "E_EVENT_FILE",
@@ -10929,6 +11423,7 @@ async function runNotify({
   warnings.push(...validation.warnings);
   const payloadText = JSON.stringify(final, null, 2);
   const size = byteLength(payloadText);
+  const previewPath = writePreview({ inputs, final, warnings, eventName, origin: base.origin, size, cwd, now, logger });
   if (!validation.ok) {
     if (inputs.failOnError) {
       throw new ValidationError(
@@ -10952,7 +11447,8 @@ async function runNotify({
       errors: validation.errors,
       errcode: void 0,
       errmsg: void 0,
-      dryRun: inputs.dryRun
+      dryRun: inputs.dryRun,
+      previewPath
     };
     writeResult({ inputs, env, result: result2, payloadText, logger });
     return result2;
@@ -11009,7 +11505,8 @@ async function runNotify({
     errcode: sendResult?.errcode,
     errmsg: sendResult?.errmsg,
     attempts: sendResult?.attempts,
-    dryRun: inputs.dryRun
+    dryRun: inputs.dryRun,
+    previewPath
   };
   writeResult({ inputs, env, result, payloadText, logger });
   return result;
@@ -11025,6 +11522,22 @@ function parseVarsLike(text, label) {
     });
   }
   return parsed;
+}
+function writePreview({ inputs, final, warnings, eventName, origin, size, cwd, now, logger }) {
+  const file = String(inputs.html ?? "").trim();
+  if (!file) return void 0;
+  const target = writePreviewHtml({
+    file,
+    cwd,
+    message: final,
+    eventName,
+    origin,
+    warnings,
+    bytes: size,
+    generatedAt: now
+  });
+  logger.info(`[preview] wrote ${target}`);
+  return target;
 }
 function writeResult({ inputs, env, result, payloadText, logger }) {
   const outputText = truncateForOutput(payloadText, OUTPUT_LIMIT);
@@ -11120,6 +11633,7 @@ var VALUE_OPTIONS = /* @__PURE__ */ new Set([
   "timeout",
   "retries",
   "api-base",
+  "html",
   "event",
   "event-name"
 ]);
@@ -11201,7 +11715,7 @@ function version() {
   }
 }
 function help() {
-  return `dmao-wecom-notifier ${version()}
+  return `wecom-notifier ${version()}
 
 Usage:
   node src/cli.mjs --webhook <url> [options]
