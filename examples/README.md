@@ -9,10 +9,15 @@ examples/
 │   ├── pr-card.yml              # PR 卡片 + 仓库内模板
 │   ├── workflow-run-failure.yml # CI 失败告警
 │   └── inline-payload.yml       # 内联 payload，不用模板文件
-└── wecom-notify/
-    ├── dmao-push.yml            # 复制到 .github/wecom-notify/
-    ├── pr-card.yml              # 复制到 .github/wecom-notify/pull_request.yml
-    └── default.yml              # 复制到 .github/wecom-notify/default.yml
+├── wecom-notify/
+│   ├── wecom-push.yml            # 复制到 .github/wecom-notify/
+│   ├── pr-card.yml              # 复制到 .github/wecom-notify/pull_request.yml
+│   ├── wecom-workflow_run-variants.yml  # variants/when/for 可读写法示例
+│   └── default.yml              # 复制到 .github/wecom-notify/default.yml
+└── kawaii/
+    ├── wecom-push.yml            # 猫娘风 push 图文卡片
+    ├── wecom-workflow_run.yml    # 猫娘风 CI 图文卡片
+    └── README.md                 # 图片选型与字段长度限制
 ```
 
 ## 1. 最小 push 通知
@@ -30,7 +35,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - uses: teriyakiushi/dmao-wecom-notifier@v1
+      - uses: teriyakiushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -52,7 +57,7 @@ workflow 必须 checkout，否则 runner 上看不到模板：
 ```yaml
 steps:
   - uses: actions/checkout@v4
-  - uses: teriyakiushi/dmao-wecom-notifier@v1
+  - uses: teriyakiushi/wecom-notifier@v1
     with:
       webhook: ${{ secrets.WECOM_WEBHOOK }}
       template-dir: .github/wecom-notify
@@ -75,7 +80,7 @@ jobs:
     if: github.event.workflow_run.conclusion != 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: teriyakiushi/dmao-wecom-notifier@v1
+      - uses: teriyakiushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
           preset: workflow_run
@@ -88,7 +93,7 @@ jobs:
 `inline-payload.yml` 不依赖仓库模板，适合单仓库临时通知：
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |
@@ -104,22 +109,55 @@ jobs:
 
 ## 5. 自定义卡片模板
 
-`wecom-notify/dmao-push.yml` 演示：
+`wecom-notify/wecom-push.yml` 演示：
 
 - `extends: push` 继承内置预设；
 - `overrides` 改来源、标题、键值行；
 - `$each` 用 `commits` 生成最多 3 行；
 - `vars` 从 Action 输入传入。
 
-复制到 `.github/wecom-notify/dmao-push.yml` 后，push 事件会自动找到它。注意同一事件只保留一个文件。
+复制到 `.github/wecom-notify/wecom-push.yml` 后，push 事件会自动找到它。注意同一事件只保留一个文件。
 
-## 6. 本地验证
+## 6. 按状态切换：`variants` + `when` + `for`
+
+`wecom-notify/wecom-workflow_run-variants.yml` 用可读写法重写了一张 CI 卡：
+
+```yaml
+template_card:
+  variants:
+    by: workflow_run.conclusion
+    cases:
+      success:
+        source: { desc: "通过", desc_color: 3 }
+        main_title: { title: "{{ repo.name }} 构建通过" }
+      failure:
+        source: { desc: "失败", desc_color: 2 }
+        main_title: { title: "{{ repo.name }} 构建失败" }
+    default:
+      source: { desc: "运行中", desc_color: 0 }
+  main_title:
+    desc: "#{{ workflow_run.run_number }} · {{ workflow_run.head_branch }}"
+  horizontal_content_list:
+    - when: workflow_run.event == "push"
+      keyname: 触发
+      value: push
+```
+
+三个要点：
+
+- `variants` 命中的分支**深度合并**到本对象：`main_title.title` 按状态变，`desc` 仍然共用。
+- `when` 写在数组元素上，条件不成立时整行消失，不用给每个字段重复写条件。
+- `for` 遍历数组；源为空时渲染成空数组，随后被剪掉，不会留下空块。
+
+`items` 里的 `$` 写法（`$if` / `$each`）继续支持，老模板不用改。
+
+## 7. 本地验证
 
 ```bash
 npm run dev -- --dry-run \
   --event tests/fixtures/events/push.json \
   --event-name push \
-  --template .github/wecom-notify/dmao-push.yml
+  --template .github/wecom-notify/wecom-push.yml
 ```
 
 或者用构建器 `docs/index.html` 编辑消息体，导出 YAML 后替换模板文件。构建器不会替换 `{{ }}`，导出后仍可继续用模板变量。

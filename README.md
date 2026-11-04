@@ -1,4 +1,4 @@
-# dmao-wecom-notifier
+# wecom-notifier
 
 把 GitHub 仓库事件推送到企业微信群机器人 Webhook。它是一个 **GitHub Composite Action**：零配置即可发送排版好的事件卡片，也可以按事件拆分模板文件，或直接在 Action YAML 里定义完整消息体。
 
@@ -7,7 +7,7 @@
 ## 特性
 
 - **零配置**：`preset: auto` 根据 `GITHUB_EVENT_NAME` 自动选择推送、PR、Issue、Release、Workflow 等卡片。
-- **一事件一文件**：`.github/wecom-notify/dmao-push.yml` 只负责 push，`dmao-pull_request.yml` 只负责 PR，避免所有消息体挤在一个 YAML 里。
+- **一事件一文件**：`.github/wecom-notify/wecom-push.yml` 只负责 push，`wecom-pull_request.yml` 只负责 PR，避免所有消息体挤在一个 YAML 里。
 - **三级定制**：
   1. Action 输入：`preset: card` + `title` / `subtitle` / `content` / `info` / `links` / `image-url`。
   2. 仓库模板：YAML/JSON 文件 + `{{ }}` 表达式、`$if`、`$each`、过滤器。
@@ -46,7 +46,7 @@ jobs:
       # 只有使用 .github/wecom-notify/ 下的模板文件时才需要 checkout
       - uses: actions/checkout@v4
 
-      - uses: teriyakiushi/dmao-wecom-notifier@v1
+      - uses: teriyakiushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -72,16 +72,16 @@ jobs:
 
 ```text
 .github/wecom-notify/
-├── dmao-push.yml          # 只处理 push
-├── dmao-pull_request.yml  # 只处理 pull_request
-├── dmao-release.yml       # 只处理 release
+├── wecom-push.yml          # 只处理 push
+├── wecom-pull_request.yml  # 只处理 pull_request
+├── wecom-release.yml       # 只处理 release
 └── default.yml            # 可选：没有匹配事件时兜底
 ```
 
 查找规则：
 
 1. 精确匹配 `<event>.yml` / `<event>.yaml`；
-2. 或后缀匹配 `*-<event>.yml` / `*-<event>.yaml`（如 `dmao-push.yml`）；
+2. 或后缀匹配 `*-<event>.yml` / `*-<event>.yaml`（如 `wecom-push.yml`）；
 3. 同一事件匹配到多个文件会报错；
 4. 都没有时使用 `default.yml` / `_default.yml`；
 5. 再没有就回落到内置预设。
@@ -89,19 +89,19 @@ jobs:
 最小示例，只覆盖 push 卡片的来源文字：
 
 ```yaml
-# .github/wecom-notify/dmao-push.yml
+# .github/wecom-notify/wecom-push.yml
 extends: push
 overrides:
   template_card:
     source:
-      desc: dmao CI
+      desc: wecom CI
       desc_color: 1
 ```
 
 完整自定义卡片（只处理 pull_request）：
 
 ```yaml
-# .github/wecom-notify/dmao-pull_request.yml
+# .github/wecom-notify/wecom-pull_request.yml
 msgtype: template_card
 template_card:
   card_type: text_notice
@@ -131,7 +131,7 @@ template_card:
 ### 简单卡片
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -153,7 +153,7 @@ template_card:
 ### 深合并任意字段
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: push
@@ -171,7 +171,7 @@ template_card:
 ### 内联完整消息
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |
@@ -189,15 +189,47 @@ template_card:
 ## 模板语法速览
 
 ```yaml
-title: "{{ repo.name }}"
-content: "{{ event_name }} · {{ actor | default: '未知' }}"
+msgtype: template_card
+template_card:
+  card_type: text_notice
+  main_title:
+    title: "{{ repo.name }}"
+    desc: "{{ event_name }} · {{ actor | default('未知') }}"
+
+  # 按结论切换整块内容，未写的字段自动保留
+  variants:
+    by: workflow_run.conclusion
+    cases:
+      success: { source: { desc: "通过", desc_color: 3 } }
+      failure: { source: { desc: "失败", desc_color: 2 } }
+    default: { source: { desc: "运行中", desc_color: 0 } }
+
+  # 条件成立才保留；写在数组元素上就是“这一行消失”
+  horizontal_content_list:
+    - when: commit_count > 0
+      keyname: 提交
+      value: "{{ commit_count }}"
+
+  # 遍历数组
+  vertical_content_list:
+    for: commits
+    limit: 3
+    item:
+      title: "{{ item.short_sha }}"
+      desc: "{{ item.first_line | truncate(40) }}"
+
+  card_action:
+    type: 1
+    url: "{{ detail_url }}"
 ```
 
 - 表达式：路径、字面量、`==`/`!=`/`>`/`<`、`&&`/`||`/`!`、括号、过滤器。
-- 指令：`$if`、`$each`、`$item`、`$as`、`$limit`、`$join`、`$prefix`、`$suffix`。
+- 指令：`when`/`$if`、`for`/`$each`、`item`/`$item`、`as`/`$as`、`limit`/`$limit`、`join`/`$join`、`prefix`/`$prefix`、`suffix`/`$suffix`；两种写法等价，`$` 写法继续支持。
+- `variants`：`{ by, cases, default }`，命中的分支深度合并到本对象，分支里写 `null` 可删除兄弟键。
 - 过滤器：`default`、`truncate`、`truncateBytes`、`firstLine`、`oneLine`、`upper`/`lower`、`replace`、`join`、`take`/`skip`、`first`/`last`、`length`、`json`、`urlencode`、`escapeMd`。
 - 上下文：`event`、`event_name`、`actor`、`repo.*`、`github.*`、`ref_name`、`sha`、`short_sha`、`workflow`、`run_id`、`run_url`、`now`、`vars.*`、`commits`、`pr`、`issue`、`release`、`workflow_run` 等；**不包含 secrets/token/env**。
-- 限制：渲染深度 20、节点 10000、单次 `$each` 最多 100 项；模板文件路径必须在 workspace 内。
+- 限制：渲染深度 20、节点 10000、单次 `for` 最多 100 项；模板文件路径必须在 workspace 内。
+- 本地检查：`npm run dev -- --dry-run --html preview.html ...` 生成可视化预览；`npm run lint:templates` 渲染 `examples/` 里的模板并检查报错与字段超长。
 
 完整语法、上下文表和限制见 [docs/templates.md](docs/templates.md)。
 
@@ -220,6 +252,7 @@ content: "{{ event_name }} · {{ actor | default: '未知' }}"
 | `timeout` / `retries` | `10` / `2` | 单次超时秒数；可重试错误的重试次数 |
 | `api-base` | `https://qyapi.weixin.qq.com` | `webhook` 只传 key 时使用的 API 基址 |
 | `debug` | `false` | 输出不含密钥的诊断信息 |
+| `html` | 空 | dry-run 时额外写一份自包含 HTML 预览到该路径 |
 
 输出：`msgtype`、`payload`（渲染后的 JSON，最多 64KB）、`errcode`、`errmsg`。
 

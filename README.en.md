@@ -1,4 +1,4 @@
-# dmao-wecom-notifier
+# wecom-notifier
 
 Send GitHub repository events to a WeCom (WeChat Work) group robot webhook. This is a **GitHub Composite Action** with zero-config event cards, per-event template files, and full control over the WeCom message body.
 
@@ -7,7 +7,7 @@ Send GitHub repository events to a WeCom (WeChat Work) group robot webhook. This
 ## Features
 
 - **Zero config**: `preset: auto` picks a card for push, pull request, issues, releases, workflow runs, stars, forks, and more.
-- **One file per event**: `.github/wecom-notify/dmao-push.yml` only handles `push`; `dmao-pull_request.yml` only handles `pull_request`. No single giant YAML.
+- **One file per event**: `.github/wecom-notify/wecom-push.yml` only handles `push`; `wecom-pull_request.yml` only handles `pull_request`. No single giant YAML.
 - **Three levels of customization**:
   1. Action inputs: `preset: card` plus `title` / `subtitle` / `content` / `info` / `links` / `image-url`.
   2. Repository templates: YAML/JSON with `{{ }}` expressions, `$if`, `$each`, and filters.
@@ -44,7 +44,7 @@ jobs:
       # Required only when you use template files under .github/wecom-notify/
       - uses: actions/checkout@v4
 
-      - uses: teriyakiushi/dmao-wecom-notifier@v1
+      - uses: teriyakiushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -70,16 +70,16 @@ Put complex customization in `.github/wecom-notify/`, one file per event:
 
 ```text
 .github/wecom-notify/
-├── dmao-push.yml          # push only
-├── dmao-pull_request.yml  # pull_request only
-├── dmao-release.yml       # release only
+├── wecom-push.yml          # push only
+├── wecom-pull_request.yml  # pull_request only
+├── wecom-release.yml       # release only
 └── default.yml            # optional fallback
 ```
 
 Discovery rules:
 
 1. exact `<event>.yml` / `<event>.yaml`;
-2. or suffix match `*-<event>.yml` / `*-<event>.yaml` (for example `dmao-push.yml`);
+2. or suffix match `*-<event>.yml` / `*-<event>.yaml` (for example `wecom-push.yml`);
 3. multiple matches for the same event are an error;
 4. otherwise `default.yml` / `_default.yml`;
 5. otherwise fall back to the built-in preset.
@@ -87,19 +87,19 @@ Discovery rules:
 Minimal override for push:
 
 ```yaml
-# .github/wecom-notify/dmao-push.yml
+# .github/wecom-notify/wecom-push.yml
 extends: push
 overrides:
   template_card:
     source:
-      desc: dmao CI
+      desc: wecom CI
       desc_color: 1
 ```
 
 A full custom card for pull requests:
 
 ```yaml
-# .github/wecom-notify/dmao-pull_request.yml
+# .github/wecom-notify/wecom-pull_request.yml
 msgtype: template_card
 template_card:
   card_type: text_notice
@@ -129,7 +129,7 @@ template_card:
 ### Simple card
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -151,7 +151,7 @@ Set `image-url` to switch to a `news_notice` card with a cover image.
 ### Deep-merge overrides
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: push
@@ -169,7 +169,7 @@ Objects are merged recursively; arrays are replaced; `null` deletes a key; `0`/`
 ### Inline complete message
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |
@@ -186,11 +186,48 @@ Do not set `payload` and `template` at the same time.
 
 ## Template syntax at a glance
 
+```yaml
+msgtype: template_card
+template_card:
+  card_type: text_notice
+  main_title:
+    title: "{{ repo.name }}"
+    desc: "{{ event_name }} · {{ actor | default('unknown') }}"
+
+  # swap a whole block by state; untouched fields are inherited
+  variants:
+    by: workflow_run.conclusion
+    cases:
+      success: { source: { desc: "passed", desc_color: 3 } }
+      failure: { source: { desc: "failed", desc_color: 2 } }
+    default: { source: { desc: "running", desc_color: 0 } }
+
+  # kept only when the condition holds; on an array item the row disappears
+  horizontal_content_list:
+    - when: commit_count > 0
+      keyname: Commits
+      value: "{{ commit_count }}"
+
+  # iterate an array
+  vertical_content_list:
+    for: commits
+    limit: 3
+    item:
+      title: "{{ item.short_sha }}"
+      desc: "{{ item.first_line | truncate(40) }}"
+
+  card_action:
+    type: 1
+    url: "{{ detail_url }}"
+```
+
 - Expressions: paths, literals, `==` / `!=` / `>` / `<`, `&&` / `||` / `!`, parentheses, filters.
-- Directives: `$if`, `$each`, `$item`, `$as`, `$limit`, `$join`, `$prefix`, `$suffix`.
+- Directives: `when` / `$if`, `for` / `$each`, `item` / `$item`, `as` / `$as`, `limit` / `$limit`, `join` / `$join`, `prefix` / `$prefix`, `suffix` / `$suffix`. Both spellings are equivalent and the `$` form keeps working.
+- `variants`: `{ by, cases, default }` deep-merges the selected branch onto its siblings; write `null` in a branch to drop a sibling key.
 - Filters: `default`, `truncate`, `truncateBytes`, `firstLine`, `oneLine`, `upper` / `lower`, `replace`, `join`, `take` / `skip`, `first` / `last`, `length`, `json`, `urlencode`, `escapeMd`.
 - Context: `event`, `event_name`, `actor`, `repo.*`, `github.*`, `ref_name`, `sha`, `short_sha`, `workflow`, `run_id`, `run_url`, `now`, `vars.*`, `commits`, `pr`, `issue`, `release`, `workflow_run`, and more. **No secrets, token, env, or inputs.**
-- Limits: depth 20, 10,000 nodes, at most 100 items per `$each`; template paths must stay inside the workspace.
+- Limits: depth 20, 10,000 nodes, at most 100 items per `for`; template paths must stay inside the workspace.
+- Local checks: `npm run dev -- --dry-run --html preview.html ...` writes a visual preview; `npm run lint:templates` renders the templates under `examples/` and reports errors and over-long fields.
 
 See [docs/templates.md](docs/templates.md) for the full syntax and context table.
 
@@ -213,6 +250,7 @@ Common inputs:
 | `timeout` / `retries` | `10` / `2` | request timeout and retry count |
 | `api-base` | `https://qyapi.weixin.qq.com` | API base when `webhook` is only a key |
 | `debug` | `false` | extra diagnostics without secrets |
+| `html` | empty | During dry-run, also write a self-contained HTML preview to this path |
 
 Outputs: `msgtype`, `payload` (rendered JSON, up to 64KB), `errcode`, `errmsg`.
 

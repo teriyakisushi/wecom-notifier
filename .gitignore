@@ -6,6 +6,9 @@
 # Research notes (temporary, not part of the shipped action)
 .research/
 
+# Local agent handoff notes (see .local/README.md)
+.local/
+
 # Dependencies and build caches
 node_modules/
 coverage/

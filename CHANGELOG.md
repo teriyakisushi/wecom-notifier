@@ -6,6 +6,32 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Readable directive aliases: `when` / `for` / `item` / `as` / `limit` / `join` /
+  `prefix` / `suffix` are equivalent to `$if` / `$each` / `$item` / `$as` /
+  `$limit` / `$join` / `$prefix` / `$suffix`. The `$` spelling keeps working, so
+  existing templates need no changes.
+- `variants` sugar for state-dependent cards: `{ by, cases, default }` deep-merges
+  the selected branch onto its siblings (`null` deletes a key) and emits
+  `W_VARIANT_UNMATCHED` when nothing matches and no default is declared.
+- HTML preview: `--html <file>` (or the `html` input) writes a self-contained page
+  with the rendered bubble, validation warnings, and the JSON payload.
+- Template lint: `npm run lint:templates` renders every `examples/**/*.yml` against
+  a real event fixture and fails on errors (and on warnings with `--strict`).
+- Event fixtures for `pull_request`, `workflow_run`, `issues`, `issue_comment`,
+  `release`, `star`, `fork`, `create`, and `delete`, plus preset snapshots and an
+  auto-preset snapshot per event.
+- Coverage gate: `npm run test:coverage` enforces `coverageThreshold` (lines 85 /
+  branches 75 / functions 85) using Node's built-in coverage.
+
+### Changed
+
+- `examples/wecom-notify/pr-card.yml` keeps the PR title within the recommended
+  26-character card title so the strict template lint stays clean.
+- CI now runs `lint:templates` on every Node version, and `build:check` plus the
+  coverage gate on Node 22 to catch dist drift early.
+
 ## [0.1.0] - 2026-11-02
 
 ### Added
@@ -34,5 +60,5 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Visual message builder in `docs/index.html` with JSON/YAML export, event
   examples, validation, image MD5 calculation, and an Action step export.
 
-[Unreleased]: https://github.com/teriyakiushi/dmao-wecom-notifier/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/teriyakiushi/dmao-wecom-notifier/releases/tag/v0.1.0
+[Unreleased]: https://github.com/teriyakiushi/wecom-notifier/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/teriyakiushi/wecom-notifier/releases/tag/v0.1.0
