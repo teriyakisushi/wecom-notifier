@@ -9,8 +9,8 @@
 - 本地要真实发送时，才需要企业微信 webhook
 
 ```bash
-git clone https://github.com/teriyakiushi/dmao-wecom-notifier.git
-cd dmao-wecom-notifier
+git clone https://github.com/teriyakiushi/wecom-notifier.git
+cd wecom-notifier
 npm ci
 npm test
 ```
@@ -26,6 +26,8 @@ npm test
 | `npm run build:check` | 重建到临时文件，与已提交的 `dist/index.mjs` 比较 |
 | `npm run smoke` | 用 dist + push fixture dry-run |
 | `npm run lint:syntax` | 对 `src`/`scripts`/`test` 做 `node --check` |
+| `npm run lint:templates` | 渲染 `examples/**/*.yml` 并检查报错/字段超长（`--strict`） |
+| `npm run test:coverage` | 跑测试并校验 `coverageThreshold`（默认 lines 85 / branches 75 / functions 85） |
 
 示例：
 
@@ -36,10 +38,20 @@ npm run dev -- --dry-run \
 
 npm run dev -- --dry-run --preset card \
   --title 部署完成 --content "v1.2.3" \
-  --link-url https://github.com/teriyakiushi/dmao-wecom-notifier
+  --link-url https://github.com/teriyakiushi/wecom-notifier
 ```
 
 `npm run dev` 后面的 `--` 是给 CLI 的参数分隔符。
+
+### 预览渲染结果
+
+dry-run 只打印 JSON，看不出真实卡片的排版。加 `--html` 会额外生成一个自包含的 HTML 预览页（手机气泡 + warnings + payload 面板，支持亮/暗主题）：
+
+```bash
+npm run dev -- --dry-run   --template examples/kawaii/wecom-push.yml   --event tests/fixtures/events/push.json   --event-name push   --html .research/tmp/preview.html
+```
+
+预览页不参与发送，也不影响 `payload` 输出；Action 里也可以用 `html:` 输入打开它（产物落在 workspace 内，记得按需上传 artifact）。
 
 ## 3. 目录结构
 
@@ -49,6 +61,7 @@ npm run dev -- --dry-run --preset card \
 ├── dist/index.mjs             # 提交的打包产物（由 src 生成）
 ├── src/
 │   ├── cli.mjs                # 参数解析 + 入口
+│   ├── preview/html.mjs       # dry-run HTML 预览（--html）
 │   ├── index.mjs              # 编排：读事件/config → 渲染 → 校验 → 发送
 │   ├── inputs.mjs             # Action 输入默认值/解析
 │   ├── context.mjs            # 安全模板上下文
@@ -58,7 +71,7 @@ npm run dev -- --dry-run --preset card \
 │   ├── util.mjs               # 纯工具函数
 │   ├── template/
 │   │   ├── expression.mjs     # {{ }} 表达式/过滤器
-│   │   └── render.mjs         # $if / $each 等指令
+│   │   └── render.mjs         # when/for/variants 等指令与别名
 │   ├── presets/
 │   │   ├── index.mjs          # 内置预设注册表
 │   │   └── helpers.mjs        # 卡片/列表/输入解析辅助
@@ -67,7 +80,11 @@ npm run dev -- --dry-run --preset card \
 │       ├── truncate.mjs       # 字节截断
 │       ├── validate.mjs       # 企业微信约束校验
 │       └── send.mjs           # webhook POST/重试/错误分类
-├── scripts/build.mjs
+├── scripts/
+│   ├── build.mjs              # esbuild 打包 + --check
+│   ├── lint.mjs               # node --check
+│   ├── lint-templates.mjs     # examples 模板渲染 lint
+│   └── check-coverage.mjs     # 覆盖率门槛
 ├── test/                      # node:test
 ├── tests/fixtures/events/     # 事件 payload
 ├── docs/                      # 文档 + 静态 builder
@@ -141,6 +158,12 @@ npm test -- --test-name-pattern="send"
 - `test/message.test.mjs`：归一、MD5、截断、校验（含可选 type 行）。
 - `test/send.test.mjs`：URL/key、成功、重试、45009、93000 不重试。
 - `test/index.test.mjs`：编排、dry-run、输出、fail-on-error。
+- `test/validate.test.mjs`：企业微信字段约束的每个错误码。
+- `test/preview.test.mjs`：HTML 预览（各 msgtype、转义、warning 面板）。
+- `test/log.test.mjs`：日志掩码、Actions workflow command、step summary。
+- `test/helpers.test.mjs`：预设辅助函数与 `info`/`links` 输入解析。
+- `test/presets.test.mjs`：17 个预设在对应事件上的快照 + 10 个事件的 auto 快照。
+- `test/presets-registry.test.mjs`：预设名解析、`none`/`text`/`markdown`/`card` 分支。
 
 新增行为时优先加测试，尤其是：
 
@@ -186,7 +209,7 @@ npm test -- --test-name-pattern="send"
 
 目标 workflow：
 
-- `ci.yml`：`npm ci` → `npm test` → `npm run build:check` → `npm run lint:syntax`；可选 `uses: ./` dry-run 冒烟。
+- `ci.yml`：matrix（18/20/22）跑 `npm ci` → `npm test` → `npm run lint:syntax` → `npm run lint:templates`；Node 22 额外跑 `build:check` 与 `test:coverage`；另有 dist/action job 做 `uses: ./` dry-run 冒烟。
 - `release.yml`：手动/tag 触发，构建后创建 GitHub Release。
 - `pages.yml`：从 `docs/` 发布 builder。
 

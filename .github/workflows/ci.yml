@@ -29,6 +29,15 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run lint:syntax
+      - run: npm run lint:templates
+
+      - name: dist must match src
+        if: matrix.node == 22
+        run: npm run build:check
+
+      - name: Coverage gate
+        if: matrix.node == 22
+        run: npm run test:coverage
 
   dist-and-action:
     name: Dist / Action smoke
@@ -42,6 +51,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build:check
+      - run: npm run lint:templates
 
       - name: Composite Action dry-run
         uses: ./

@@ -8,5 +8,5 @@ overrides:
       desc: "GitHub PR"
       desc_color: 0
     main_title:
-      title: "#{{ pr.number }} {{ pr.title | truncate(40) }}"
+      title: "#{{ pr.number }} {{ pr.title | truncate(20) }}"
       desc: "{{ pr.user.login }} · {{ pr.state }}"

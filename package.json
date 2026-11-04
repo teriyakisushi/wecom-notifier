@@ -1,5 +1,5 @@
 {
-  "name": "dmao-wecom-notifier",
+  "name": "wecom-notifier",
   "version": "0.1.0",
   "private": true,
   "description": "GitHub Composite Action that sends customizable GitHub event notifications to WeCom group webhooks.",
@@ -15,7 +15,9 @@
     "test:watch": "node --test --watch",
     "dev": "node src/cli.mjs",
     "smoke": "node dist/index.mjs --dry-run --event-name push --event tests/fixtures/events/push.json",
-    "lint:syntax": "node scripts/lint.mjs"
+    "lint:syntax": "node scripts/lint.mjs",
+    "lint:templates": "node scripts/lint-templates.mjs --strict",
+    "test:coverage": "node scripts/check-coverage.mjs"
   },
   "dependencies": {
     "yaml": "2.9.1"
@@ -26,10 +28,15 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teriyakiushi/dmao-wecom-notifier.git"
+    "url": "git+https://github.com/teriyakiushi/wecom-notifier.git"
   },
   "bugs": {
-    "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/issues"
+    "url": "https://github.com/teriyakiushi/wecom-notifier/issues"
   },
-  "homepage": "https://github.com/teriyakiushi/dmao-wecom-notifier#readme"
+  "homepage": "https://github.com/teriyakiushi/wecom-notifier#readme",
+  "coverageThreshold": {
+    "lines": 85,
+    "branches": 75,
+    "functions": 85
+  }
 }
