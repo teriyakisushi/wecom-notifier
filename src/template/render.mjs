@@ -1,5 +1,5 @@
 import { TemplateError } from '../errors.mjs';
-import { isPlainObject } from '../util.mjs';
+import { deepMerge, isPlainObject } from '../util.mjs';
 import { evaluate, evaluateCondition, renderTemplateString, stringifyScalar } from './expression.mjs';
 
 const MAX_DEPTH = 20;
@@ -7,6 +7,23 @@ const MAX_NODES = 10000;
 const MAX_ITERATIONS = 100;
 const DIRECTIVES = new Set(['$if', '$each', '$item', '$limit', '$as', '$join', '$prefix', '$suffix']);
 const IDENTIFIER_RE = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
+
+// Readable aliases: `when`/`for` mirror `$if`/`$each`. Templates may mix them,
+// but a single object cannot use both spellings of the same directive.
+const ALIASES = Object.freeze({
+  when: '$if',
+  for: '$each',
+  item: '$item',
+  as: '$as',
+  limit: '$limit',
+  join: '$join',
+  prefix: '$prefix',
+  suffix: '$suffix',
+});
+const FOR_KEYS = new Set(['for', 'item', 'as', 'limit', 'join', 'prefix', 'suffix']);
+const VARIANT_KEYS = new Set(['by', 'key', 'cases', 'default']);
+const DIRECTIVE_HINT =
+  'Directives are $if (alias when), $each (alias for), $item, $limit, $as, $join, $prefix, $suffix.';
 
 function fail(message, path, hint) {
   throw new TemplateError(message, { code: 'E_TEMPLATE_RENDER', path, hint });
@@ -116,20 +133,142 @@ function renderEach(node, state, context, locals, path) {
   return `${prefix}${body}${suffix}`;
 }
 
+function withoutVariants(node) {
+  const out = {};
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'variants') continue;
+    out[key] = value;
+  }
+  return out;
+}
+
+/**
+ * `variants` picks one branch and merges it into the surrounding object, so a
+ * template can share common fields and override only what changes per outcome:
+ *
+ *   template_card:
+ *     card_type: news_notice
+ *     variants:
+ *       by: workflow_run.conclusion
+ *       cases:
+ *         success: { source: {...} }
+ *         failure: { source: {...} }
+ *       default: { source: {...} }
+ *
+ * The matched branch wins over sibling keys; `null` inside a branch deletes a
+ * sibling key. An unmatched selector falls through to `default`.
+ */
+function resolveVariants(node, state, context, locals, path) {
+  const spec = node.variants;
+  const specPath = `${path}.variants`;
+  if (!isPlainObject(spec)) {
+    fail('"variants" must be a mapping', specPath, 'Use variants: {by: <path>, cases: {<value>: {...}}, default: {...}}.');
+  }
+  for (const key of Object.keys(spec)) {
+    if (!VARIANT_KEYS.has(key)) {
+      fail(`Unknown "variants" key "${key}"`, `${specPath}.${key}`, 'Allowed keys are by, cases, and default.');
+    }
+  }
+  const selector = spec.by ?? spec.key;
+  if (selector === undefined || selector === null || selector === '') {
+    fail('"variants" requires "by"', specPath, 'Point it at a context path, such as workflow_run.conclusion.');
+  }
+
+  const cases = spec.cases ?? {};
+  if (!isPlainObject(cases)) {
+    fail('"variants.cases" must be a mapping', `${specPath}.cases`, 'Each key is a possible selector value.');
+  }
+
+  const raw = evaluateDirective(selector, context, locals, `${specPath}.by`);
+  const key = raw === undefined || raw === null ? '' : stringifyScalar(raw);
+  const matched = Object.hasOwn(cases, key);
+  const chosen = matched ? cases[key] : spec.default;
+
+  if (chosen === undefined || chosen === null) {
+    if (!matched && !Object.hasOwn(spec, 'default')) {
+      state.warnings.push({
+        code: 'W_VARIANT_UNMATCHED',
+        path: specPath,
+        message: `variants had no case for "${key}" and no default; the object was left without that branch.`,
+      });
+    }
+    return withoutVariants(node);
+  }
+  if (!isPlainObject(chosen)) {
+    fail(
+      `"variants" selected a branch for "${key}" that is not a mapping`,
+      matched ? `${specPath}.cases.${key}` : `${specPath}.default`,
+    );
+  }
+  return deepMerge(withoutVariants(node), chosen, specPath);
+}
+
+/**
+ * Translate the readable aliases into the canonical `$`-prefixed directives.
+ * `when`/`for` are pure sugar: the rest of the renderer only sees `$if`/`$each`.
+ */
+function normalizeDirectives(node, path) {
+  const hasFor = Object.hasOwn(node, 'for');
+  const hasWhen = Object.hasOwn(node, 'when');
+  if (!hasFor && !hasWhen) return node;
+  if (hasFor && Object.hasOwn(node, '$each')) {
+    fail('Use either "for" or "$each", not both', path, 'They are the same directive; keep the readable "for" form.');
+  }
+  if (hasWhen && Object.hasOwn(node, '$if')) {
+    fail('Use either "when" or "$if", not both', path, 'They are the same directive; keep the readable "when" form.');
+  }
+
+  if (hasFor) {
+    const out = { $each: node.for };
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'for') continue;
+      if (!FOR_KEYS.has(key)) {
+        fail(
+          `"${key}" cannot sit next to "for"`,
+          `${path}.${key}`,
+          'A "for" block only accepts for, item, as, limit, join, prefix, and suffix. Move other fields inside item.',
+        );
+      }
+      out[ALIASES[key]] = value;
+    }
+    if (!Object.hasOwn(out, '$item')) {
+      fail('"for" requires an "item" template', path, 'Add item: { ... } describing one element.');
+    }
+    return out;
+  }
+
+  const out = {};
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'when') out.$if = value;
+    else out[key] = value;
+  }
+  return out;
+}
+
 function renderObject(node, state, context, locals, path) {
-  const keys = Object.keys(node);
-  const hasEach = Object.hasOwn(node, '$each');
-  const hasIf = Object.hasOwn(node, '$if');
+  let current = node;
+  if (Object.hasOwn(current, 'variants')) {
+    current = resolveVariants(current, state, context, locals, path);
+  }
+  current = normalizeDirectives(current, path);
+
+  const keys = Object.keys(current);
+  const hasEach = Object.hasOwn(current, '$each');
+  const hasIf = Object.hasOwn(current, '$if');
 
   if (hasEach) {
     if (hasIf) {
-      fail('$each and $if cannot be combined on the same object', path, 'Move $if inside $item, or use two nested objects.');
+      fail(
+        'for/$each and when/$if cannot be combined on the same object',
+        path,
+        'Move the condition inside item, or nest the object one level deeper.',
+      );
     }
-    return renderEach(node, state, context, locals, path);
+    return renderEach(current, state, context, locals, path);
   }
 
   if (hasIf) {
-    const condition = evaluateCondition(node.$if, context, locals);
+    const condition = evaluateCondition(current.$if, context, locals);
     if (!condition) return undefined;
   }
 
@@ -138,12 +277,12 @@ function renderObject(node, state, context, locals, path) {
     if (key.startsWith('$')) {
       if (key === '$if' && hasIf) continue;
       if (!DIRECTIVES.has(key)) {
-        fail(`Unknown directive "${key}"`, `${path}.${key}`, 'Directives are $if, $each, $item, $limit, $as, $join, $prefix, $suffix.');
+        fail(`Unknown directive "${key}"`, `${path}.${key}`, DIRECTIVE_HINT);
       }
       // A stray $each/$item/etc. is a configuration mistake.
       fail(`Directive "${key}" is not valid here`, `${path}.${key}`);
     }
-    const value = renderValue(node[key], state, context, locals, `${path}.${key}`);
+    const value = renderValue(current[key], state, context, locals, `${path}.${key}`);
     if (value === undefined) continue;
     out[key] = value;
   }

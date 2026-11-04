@@ -81,3 +81,135 @@ test('invalid directives fail loudly', () => {
     /\$each requires a sibling \$item/,
   );
 });
+
+/* ------------------------------------------------ readable aliases (D1) */
+
+test('when is an alias for $if', () => {
+  const result = renderMessage(
+    {
+      rows: [
+        { when: 'count > 1', text: 'many' },
+        { when: 'count > 5', text: 'lots' },
+        { when: 'count > 0', text: 'some' },
+      ],
+    },
+    context,
+  );
+  assert.deepEqual(result.value, { rows: [{ text: 'many' }, { text: 'some' }] });
+});
+
+test('for/item/as/limit/join are aliases for $each directives', () => {
+  const result = renderMessage(
+    { list: { for: 'commits', as: 'c', item: '{{ c.short_sha }}', join: '/', limit: 1 } },
+    context,
+  );
+  assert.deepEqual(result.value, { list: 'aaa111' });
+});
+
+test('aliases can nest and mix with the $ spelling', () => {
+  const result = renderMessage(
+    {
+      rows: {
+        for: 'commits',
+        item: { $if: 'item.short_sha == "aaa111"', text: '{{ item.first_line }}' },
+      },
+      many: { when: 'count > 1', text: 'yes' },
+    },
+    context,
+  );
+  assert.deepEqual(result.value, { rows: [{ text: 'feat: one' }], many: { text: 'yes' } });
+});
+
+test('mixing the two spellings of one directive fails', () => {
+  assert.throws(() => renderMessage({ a: { when: 'count > 0', $if: 'count > 0' } }, context), /either "when" or "\$if"/u);
+  assert.throws(() => renderMessage({ a: { for: 'commits', $each: 'commits', item: 'x' } }, context), /either "for" or "\$each"/u);
+});
+
+test('for rejects stray fields and a missing item', () => {
+  assert.throws(() => renderMessage({ a: { for: 'commits', item: 'x', title: 'nope' } }, context), /cannot sit next to "for"/u);
+  assert.throws(() => renderMessage({ a: { for: 'commits' } }, context), /requires an "item" template/u);
+});
+
+test('for and when cannot share an object', () => {
+  assert.throws(() => renderMessage({ a: { for: 'commits', item: 'x', when: 'count > 0' } }, context), /cannot sit next to "for"/u);
+  assert.throws(() => renderMessage({ a: { $each: 'commits', $item: 'x', $if: 'count > 0' } }, context), /cannot be combined/u);
+});
+
+/* -------------------------------------------------- variants sugar (D3) */
+
+const variantTemplate = {
+  card: {
+    card_type: 'text_notice',
+    main_title: { title: '共享标题' },
+    variants: {
+      by: 'status',
+      cases: {
+        ok: { source: { desc: '成功', desc_color: 3 } },
+        bad: { source: { desc: '失败', desc_color: 2 }, main_title: { title: '覆盖标题' } },
+      },
+      default: { source: { desc: '未知', desc_color: 1 } },
+    },
+  },
+};
+
+test('variants picks the matching case and merges it over siblings', () => {
+  assert.deepEqual(renderMessage(variantTemplate, { status: 'ok' }).value, {
+    card: {
+      card_type: 'text_notice',
+      main_title: { title: '共享标题' },
+      source: { desc: '成功', desc_color: 3 },
+    },
+  });
+  assert.deepEqual(renderMessage(variantTemplate, { status: 'bad' }).value, {
+    card: {
+      card_type: 'text_notice',
+      main_title: { title: '覆盖标题' },
+      source: { desc: '失败', desc_color: 2 },
+    },
+  });
+});
+
+test('variants falls back to default, then to the plain object', () => {
+  const fallback = renderMessage(variantTemplate, { status: 'weird' });
+  assert.deepEqual(fallback.value.card.source, { desc: '未知', desc_color: 1 });
+  assert.deepEqual(fallback.warnings, []);
+
+  const bare = renderMessage(
+    { card: { title: 'x', variants: { by: 'status', cases: { ok: { title: 'y' } } } } },
+    { status: 'nope' },
+  );
+  assert.deepEqual(bare.value, { card: { title: 'x' } });
+  assert.equal(bare.warnings[0].code, 'W_VARIANT_UNMATCHED');
+});
+
+test('variants supports null to delete a sibling key', () => {
+  const result = renderMessage(
+    { card: { title: 'x', quote: 'keep', variants: { by: 'status', cases: { ok: { quote: null } } } } },
+    { status: 'ok' },
+  );
+  assert.deepEqual(result.value, { card: { title: 'x' } });
+});
+
+test('variants validates its shape', () => {
+  assert.throws(() => renderMessage({ a: { variants: 'nope' } }, {}), /must be a mapping/u);
+  assert.throws(() => renderMessage({ a: { variants: { cases: {} } } }, {}), /requires "by"/u);
+  assert.throws(() => renderMessage({ a: { variants: { by: 'x', cases: [], default: {} } } }, {}), /must be a mapping/u);
+  assert.throws(() => renderMessage({ a: { variants: { by: 'x', cases: {}, extra: 1 } } }, {}), /Unknown "variants" key/u);
+  assert.throws(
+    () => renderMessage({ a: { variants: { by: 'x', cases: { y: 'not-an-object' } } } }, { x: 'y' }),
+    /not a mapping/u,
+  );
+});
+
+test('variants works inside array elements', () => {
+  const result = renderMessage(
+    {
+      rows: [
+        { variants: { by: 'count', cases: { 2: { text: 'two' } }, default: { text: 'other' } } },
+        { variants: { by: 'count', cases: { 3: { text: 'three' } }, default: { text: 'other' } } },
+      ],
+    },
+    context,
+  );
+  assert.deepEqual(result.value, { rows: [{ text: 'two' }, { text: 'other' }] });
+});

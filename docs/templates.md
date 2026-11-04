@@ -96,7 +96,32 @@ vars.environment
 
 指令是对象里的特殊键，只在**当前对象**生效。
 
-### $if
+每个指令都有两种写法：可读别名与 `$` 前缀原名。两种完全等价，**同一个对象里不要混用同一条指令**：
+
+| 别名 | 原名 | 作用 |
+| --- | --- | --- |
+| `when` | `$if` | 条件成立时保留对象 |
+| `for` | `$each` | 遍历数组 |
+| `item` | `$item` | 每个元素的模板 |
+| `as` | `$as` | 循环变量名（默认 `item`） |
+| `limit` | `$limit` | 最多渲染几项 |
+| `join` | `$join` | 用分隔符拼成字符串 |
+| `prefix` / `suffix` | `$prefix` / `$suffix` | 拼字符串时的前后缀 |
+
+```yaml
+# 两种写法混着用也没问题，只要同一条指令只出现一次
+horizontal_content_list:
+  for: commits
+  limit: 3
+  as: commit
+  item:
+    keyname: "{{ commit.short_sha }}"
+    value: "{{ commit.first_line | truncate(24) }}"
+```
+
+新写模板建议用别名；`$` 写法继续支持，老模板不用改。
+
+### $if / when
 
 条件为真时保留整个对象；为假时返回 `undefined`，随后被剪空（父对象里该键消失，数组里该元素被去掉）。
 
@@ -116,9 +141,11 @@ $if: true
 
 也接受数字（0 为假）；空字符串/空值视为假。
 
-### $each / $item
+同一个对象里 `when` 和 `$if` 只能出现一个，否则报错。
 
-`$each` 指向数组，`$item` 是每个元素的模板；结果是一个数组。
+### $each / $item（别名 `for` / `item`）
+
+`for`（或 `$each`）指向数组，`item`（或 `$item`）是每个元素的模板；结果是一个数组。
 
 ```yaml
 horizontal_content_list:
@@ -135,8 +162,8 @@ horizontal_content_list:
 - `$item` 可以是对象、数组或标量。
 - 源不是数组 → 渲染错误；`undefined` / `null` 视为空数组。
 - `$limit` 必须是正整数；最多 100（超出按 100 处理并给 `W_EACH_LIMIT` warning）。
-- `$each` 和 `$if` 不能放在同一个对象上；需要过滤时把 `$if` 放进 `$item` 的子对象，或包一层父对象。
-- `$each` 对象里只允许 `$each`/`$item`/`$limit`/`$as`/`$join`/`$prefix`/`$suffix`。
+- 遍历指令和条件指令不能放在同一个对象上（`when` 与 `for` 也不能）；需要过滤时把条件写进 `item` 的子对象，或包一层父对象。
+- 遍历对象里只允许上表列出的键，多余字段会直接报错并提示可用键名。
 
 ### $join / $prefix / $suffix
 
@@ -162,6 +189,40 @@ sub_title_text:
 ```
 
 注意 YAML 引号：需要真实换行时用双引号 `"\n"` 或块标量 `|`；单引号里的 `\n` 是两个字面字符。
+
+### variants：按状态切换整块内容
+
+同一个卡片常常要按结论（成功 / 失败 / 取消）换标题、换颜色、换文案。用 `variants` 把分支写在一起，比给十几个字段各挂一个 `when` 好读得多：
+
+```yaml
+template_card:
+  card_type: text_notice
+  main_title:
+    title: "{{ repo.name }}"
+    desc: "{{ workflow.name }}"
+  variants:
+    by: workflow_run.conclusion
+    cases:
+      success:
+        source: { desc: "通过", desc_color: 3 }
+        main_title:
+          title: "{{ repo.name }} 构建通过"
+      failure:
+        source: { desc: "失败", desc_color: 2 }
+        main_title:
+          title: "{{ repo.name }} 构建失败"
+    default:
+      source: { desc: "进行中", desc_color: 0 }
+```
+
+规则：
+
+- `by` 是任意表达式或路径，取到的值用来选分支；也接受 `key` 作为同义键。
+- `cases` 是 `值 → 对象` 的映射，命中的对象会**深度合并**到本对象上：同名字段被覆盖，分支里写 `null` 可以删掉某个兄弟键。
+- `default` 可选；既不命中又没有 `default` 时保留本对象其余字段，并给一条 `W_VARIANT_UNMATCHED` warning。
+- 分支键按字符串比较，`1` 与 `"1"` 等价；布尔值写成 `"true"` / `"false"`。
+- `variants` 只能出现在对象里，数组元素也可以按分支切换。
+- 只允许 `by` / `key` / `cases` / `default` 四个键，写错会直接报错。
 
 ### 一个完整示例
 

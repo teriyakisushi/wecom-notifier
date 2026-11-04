@@ -1,0 +1,66 @@
+# 复制到 .github/wecom-notify/workflow_run.yml
+#
+# 演示可读写法：variants 按结论切块、when 过滤可选行、for 遍历列表。
+# 三个指令都在同一个卡片里，等价于过去一堆 $if / $each。
+msgtype: template_card
+template_card:
+  # 按 workflow_run.conclusion 选一组合并到本对象：
+  # 命中的分支会覆盖同名字段，未写的字段保留。
+  variants:
+    by: workflow_run.conclusion
+    cases:
+      success:
+        source:
+          desc: "通过"
+          desc_color: 3
+        main_title:
+          title: "{{ repo.name }} 构建通过"
+      failure:
+        source:
+          desc: "失败"
+          desc_color: 2
+        main_title:
+          title: "{{ repo.name }} 构建失败"
+      cancelled:
+        source:
+          desc: "取消"
+          desc_color: 1
+        main_title:
+          title: "{{ repo.name }} 构建取消"
+    default:
+      source:
+        desc: "运行中"
+        desc_color: 0
+      main_title:
+        title: "{{ repo.name }} 正在构建"
+
+  card_type: text_notice
+
+  # 与 variants 里的 main_title 深度合并：这里只补 desc。
+  main_title:
+    desc: "#{{ workflow_run.run_number }} · {{ workflow_run.head_branch }}"
+
+  sub_title_text: "{{ workflow_run.name }} · {{ workflow_run.head_sha | truncate(7) }}"
+
+  horizontal_content_list:
+    # 只有 push 触发的运行才显示这一行；条件不成立时整行消失。
+    - when: workflow_run.event == "push"
+      keyname: 触发
+      value: push
+    - keyname: 分支
+      value: "{{ workflow_run.head_branch }}"
+    - keyname: 状态
+      value: "{{ workflow_run.status }}"
+
+  vertical_content_list:
+    # 关联的 PR 列表；没有关联 PR 时渲染为空数组，随后被剪掉。
+    for: workflow_run.pull_requests
+    limit: 2
+    as: pr
+    item:
+      title: "PR #{{ pr.number }}"
+      desc: "{{ pr.head.repo.name | default('fork') }}:{{ pr.head.ref }}"
+
+  card_action:
+    type: 1
+    url: "{{ run_url }}"
