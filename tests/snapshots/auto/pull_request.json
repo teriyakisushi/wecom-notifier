@@ -1,0 +1,46 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "GitHub PR",
+      "desc_color": 0
+    },
+    "main_title": {
+      "title": "🔀 #42 feat: add kawaii te…",
+      "desc": "octocat · 待审阅 · 新开"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/pull/42"
+    },
+    "emphasis_content": {
+      "title": "+128",
+      "desc": "-12"
+    },
+    "quote_area": {
+      "quote_text": "Adds two kawaii-style templates. - push (news_notice) - workflow_run (news_notice)"
+    },
+    "horizontal_content_list": [
+      {
+        "keyname": "状态",
+        "value": "待审阅"
+      },
+      {
+        "keyname": "分支",
+        "value": "main ← feat/kawaii-templa…"
+      },
+      {
+        "keyname": "文件",
+        "value": "3 个"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看 PR",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/pull/42"
+      }
+    ]
+  }
+}

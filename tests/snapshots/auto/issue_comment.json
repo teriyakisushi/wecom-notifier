@@ -1,0 +1,42 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "GitHub 评论",
+      "desc_color": 0
+    },
+    "main_title": {
+      "title": "💬 #77 模板文档缺少 $each 示例",
+      "desc": "octocat 在 Issue 中新评论"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77#issuecomment-1234567"
+    },
+    "quote_area": {
+      "quote_text": "补了一版示例，见 #78。"
+    },
+    "horizontal_content_list": [
+      {
+        "keyname": "类型",
+        "value": "Issue"
+      },
+      {
+        "keyname": "仓库",
+        "value": "teriyakiushi/wecom-notifi…"
+      },
+      {
+        "keyname": "评论",
+        "value": "#1234567"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看评论",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77#issuecomment-1234567"
+      }
+    ]
+  }
+}

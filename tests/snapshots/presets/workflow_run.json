@@ -1,0 +1,43 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "Actions",
+      "desc_color": 2
+    },
+    "main_title": {
+      "title": "❌ CI",
+      "desc": "main · push"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/actions/runs/5555555555"
+    },
+    "emphasis_content": {
+      "title": "失败",
+      "desc": "工作流结果"
+    },
+    "horizontal_content_list": [
+      {
+        "keyname": "分支",
+        "value": "main"
+      },
+      {
+        "keyname": "事件",
+        "value": "push"
+      },
+      {
+        "keyname": "状态",
+        "value": "失败"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看运行",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/actions/runs/5555555555"
+      }
+    ]
+  }
+}

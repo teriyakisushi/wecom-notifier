@@ -1,0 +1,49 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "GitHub",
+      "desc_color": 0
+    },
+    "main_title": {
+      "title": "📦 teriyakiushi/wecom-noti…",
+      "desc": "teriyakiushi 推送到 main"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/compare/1111111111111111111111111111111111111111...2222222222222222222222222222222222222222"
+    },
+    "emphasis_content": {
+      "title": "2",
+      "desc": "个新提交"
+    },
+    "sub_title_text": "• feat: add WeCom notifier\n• docs: document per-event templates",
+    "horizontal_content_list": [
+      {
+        "keyname": "仓库",
+        "value": "teriyakiushi/wecom-notifi…"
+      },
+      {
+        "keyname": "分支",
+        "value": "main"
+      },
+      {
+        "keyname": "提交",
+        "value": "2 个"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看对比",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/compare/1111111111111111111111111111111111111111...2222222222222222222222222222222222222222"
+      },
+      {
+        "type": 1,
+        "title": "仓库",
+        "url": "https://github.com/teriyakiushi/wecom-notifier"
+      }
+    ]
+  }
+}

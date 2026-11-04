@@ -1,0 +1,40 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "GitHub Star",
+      "desc_color": 3
+    },
+    "main_title": {
+      "title": "⭐ 收到新 Star",
+      "desc": "octocat Star 了仓库"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier"
+    },
+    "emphasis_content": {
+      "title": "129",
+      "desc": "Stars"
+    },
+    "sub_title_text": "Send GitHub events to WeCom group bots",
+    "horizontal_content_list": [
+      {
+        "keyname": "仓库",
+        "value": "teriyakiushi/wecom-notifi…"
+      },
+      {
+        "keyname": "Stars",
+        "value": "129"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看仓库",
+        "url": "https://github.com/teriyakiushi/wecom-notifier"
+      }
+    ]
+  }
+}

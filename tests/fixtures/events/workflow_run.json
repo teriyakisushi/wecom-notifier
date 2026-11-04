@@ -1,0 +1,51 @@
+{
+  "action": "completed",
+  "workflow_run": {
+    "id": 5555555555,
+    "name": "CI",
+    "run_number": 42,
+    "run_attempt": 1,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_branch": "main",
+    "head_sha": "2222222222222222222222222222222222222222",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier/actions/runs/5555555555",
+    "created_at": "2026-11-01T08:00:00Z",
+    "updated_at": "2026-11-01T08:04:12Z",
+    "actor": {
+      "login": "octocat",
+      "id": 583231,
+      "html_url": "https://github.com/octocat"
+    },
+    "pull_requests": []
+  },
+  "workflow": {
+    "id": 909090,
+    "name": "CI"
+  },
+  "repository": {
+    "id": 1000001,
+    "name": "wecom-notifier",
+    "full_name": "teriyakiushi/wecom-notifier",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier",
+    "url": "https://api.github.com/repos/teriyakiushi/wecom-notifier",
+    "description": "Send GitHub events to WeCom group bots",
+    "default_branch": "main",
+    "private": false,
+    "fork": false,
+    "stargazers_count": 128,
+    "forks_count": 9,
+    "open_issues_count": 3,
+    "owner": {
+      "login": "teriyakiushi",
+      "id": 1000001,
+      "html_url": "https://github.com/teriyakiushi"
+    }
+  },
+  "sender": {
+    "login": "octocat",
+    "id": 583231,
+    "html_url": "https://github.com/octocat"
+  }
+}

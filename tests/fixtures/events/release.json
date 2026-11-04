@@ -1,0 +1,41 @@
+{
+  "action": "published",
+  "release": {
+    "tag_name": "v1.0.0",
+    "name": "v1.0.0 — 首个稳定版",
+    "body": "## 亮点\n\n- 全新 `when` / `for` 别名\n- `variants` 语法糖\n- HTML 预览",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-03T00:00:00Z",
+    "author": {
+      "login": "octocat",
+      "id": 583231,
+      "html_url": "https://github.com/octocat"
+    }
+  },
+  "repository": {
+    "id": 1000001,
+    "name": "wecom-notifier",
+    "full_name": "teriyakiushi/wecom-notifier",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier",
+    "url": "https://api.github.com/repos/teriyakiushi/wecom-notifier",
+    "description": "Send GitHub events to WeCom group bots",
+    "default_branch": "main",
+    "private": false,
+    "fork": false,
+    "stargazers_count": 128,
+    "forks_count": 9,
+    "open_issues_count": 3,
+    "owner": {
+      "login": "teriyakiushi",
+      "id": 1000001,
+      "html_url": "https://github.com/teriyakiushi"
+    }
+  },
+  "sender": {
+    "login": "octocat",
+    "id": 583231,
+    "html_url": "https://github.com/octocat"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "action": "opened",
+  "number": 42,
+  "pull_request": {
+    "number": 42,
+    "title": "feat: add kawaii templates",
+    "body": "Adds two kawaii-style templates.\n\n- push (news_notice)\n- workflow_run (news_notice)",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier/pull/42",
+    "state": "open",
+    "draft": false,
+    "merged": false,
+    "additions": 128,
+    "deletions": 12,
+    "changed_files": 3,
+    "created_at": "2026-11-01T08:00:00Z",
+    "updated_at": "2026-11-01T09:30:00Z",
+    "user": {
+      "login": "octocat",
+      "id": 583231,
+      "html_url": "https://github.com/octocat"
+    },
+    "head": {
+      "ref": "feat/kawaii-templates",
+      "sha": "3333333333333333333333333333333333333333",
+      "repo": {
+        "id": 1000001,
+        "name": "wecom-notifier",
+        "full_name": "teriyakiushi/wecom-notifier",
+        "html_url": "https://github.com/teriyakiushi/wecom-notifier",
+        "url": "https://api.github.com/repos/teriyakiushi/wecom-notifier",
+        "description": "Send GitHub events to WeCom group bots",
+        "default_branch": "main",
+        "private": false,
+        "fork": false,
+        "stargazers_count": 128,
+        "forks_count": 9,
+        "open_issues_count": 3,
+        "owner": {
+          "login": "teriyakiushi",
+          "id": 1000001,
+          "html_url": "https://github.com/teriyakiushi"
+        }
+      }
+    },
+    "base": {
+      "ref": "main",
+      "sha": "1111111111111111111111111111111111111111",
+      "repo": {
+        "id": 1000001,
+        "name": "wecom-notifier",
+        "full_name": "teriyakiushi/wecom-notifier",
+        "html_url": "https://github.com/teriyakiushi/wecom-notifier",
+        "url": "https://api.github.com/repos/teriyakiushi/wecom-notifier",
+        "description": "Send GitHub events to WeCom group bots",
+        "default_branch": "main",
+        "private": false,
+        "fork": false,
+        "stargazers_count": 128,
+        "forks_count": 9,
+        "open_issues_count": 3,
+        "owner": {
+          "login": "teriyakiushi",
+          "id": 1000001,
+          "html_url": "https://github.com/teriyakiushi"
+        }
+      }
+    },
+    "labels": [
+      {
+        "name": "enhancement"
+      },
+      {
+        "name": "templates"
+      }
+    ]
+  },
+  "repository": {
+    "id": 1000001,
+    "name": "wecom-notifier",
+    "full_name": "teriyakiushi/wecom-notifier",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier",
+    "url": "https://api.github.com/repos/teriyakiushi/wecom-notifier",
+    "description": "Send GitHub events to WeCom group bots",
+    "default_branch": "main",
+    "private": false,
+    "fork": false,
+    "stargazers_count": 128,
+    "forks_count": 9,
+    "open_issues_count": 3,
+    "owner": {
+      "login": "teriyakiushi",
+      "id": 1000001,
+      "html_url": "https://github.com/teriyakiushi"
+    }
+  },
+  "sender": {
+    "login": "octocat",
+    "id": 583231,
+    "html_url": "https://github.com/octocat"
+  }
+}

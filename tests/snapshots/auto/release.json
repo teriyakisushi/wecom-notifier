@@ -1,0 +1,42 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "Release",
+      "desc_color": 3
+    },
+    "main_title": {
+      "title": "🚀 v1.0.0",
+      "desc": "v1.0.0 — 首个稳定版 · octocat · 已发布"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+    },
+    "quote_area": {
+      "quote_text": "## 亮点 - 全新 `when` / `for` 别名 - `variants` 语法糖 - HTML 预览"
+    },
+    "horizontal_content_list": [
+      {
+        "keyname": "标签",
+        "value": "v1.0.0"
+      },
+      {
+        "keyname": "预发布",
+        "value": "否"
+      },
+      {
+        "keyname": "资产",
+        "value": "0 个"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看 Release",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "GitHub Issue",
+      "desc_color": 0
+    },
+    "main_title": {
+      "title": "🐛 #77 模板文档缺少 $each 示例",
+      "desc": "octocat · 打开 · 新开"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77"
+    },
+    "quote_area": {
+      "quote_text": "在 docs/templates.md 里没找到 `$each` 的完整示例。"
+    },
+    "horizontal_content_list": [
+      {
+        "keyname": "状态",
+        "value": "打开"
+      },
+      {
+        "keyname": "标签",
+        "value": "docs"
+      },
+      {
+        "keyname": "指派",
+        "value": "无"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看 Issue",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77"
+      }
+    ]
+  }
+}

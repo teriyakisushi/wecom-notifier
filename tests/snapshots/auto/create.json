@@ -1,0 +1,39 @@
+{
+  "msgtype": "template_card",
+  "template_card": {
+    "card_type": "text_notice",
+    "source": {
+      "desc": "GitHub",
+      "desc_color": 3
+    },
+    "main_title": {
+      "title": "🌿 新建标签",
+      "desc": "octocat 创建了 v1.0.0"
+    },
+    "card_action": {
+      "type": 1,
+      "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+    },
+    "horizontal_content_list": [
+      {
+        "keyname": "仓库",
+        "value": "teriyakiushi/wecom-notifi…"
+      },
+      {
+        "keyname": "类型",
+        "value": "tag"
+      },
+      {
+        "keyname": "引用",
+        "value": "v1.0.0"
+      }
+    ],
+    "jump_list": [
+      {
+        "type": 1,
+        "title": "查看引用",
+        "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+      }
+    ]
+  }
+}
