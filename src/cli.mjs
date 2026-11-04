@@ -26,6 +26,7 @@ const VALUE_OPTIONS = new Set([
   'timeout',
   'retries',
   'api-base',
+  'html',
   'event',
   'event-name',
 ]);
@@ -117,7 +118,7 @@ function version() {
 }
 
 function help() {
-  return `dmao-wecom-notifier ${version()}
+  return `wecom-notifier ${version()}
 
 Usage:
   node src/cli.mjs --webhook <url> [options]

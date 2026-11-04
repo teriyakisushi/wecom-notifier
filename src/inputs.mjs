@@ -26,6 +26,7 @@ export const DEFAULTS = Object.freeze({
   timeout: 10,
   retries: 2,
   apiBase: 'https://qyapi.weixin.qq.com',
+  html: '',
   debug: false,
 });
 
@@ -54,6 +55,7 @@ export const INPUT_KEYS = Object.freeze({
   timeout: 'timeout',
   retries: 'retries',
   apiBase: 'api-base',
+  html: 'html',
   debug: 'debug',
 });
 

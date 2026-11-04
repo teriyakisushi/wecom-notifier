@@ -60,6 +60,7 @@ preset（auto / 事件名 / text / markdown / card / none）
 | `retries` | `2` | 网络错误、超时、HTTP 5xx/429、WeCom `45009` 的重试次数，0–5。 |
 | `api-base` | `https://qyapi.weixin.qq.com` | 当 `webhook` 只传 key 时使用的 API 基址；完整 URL 时忽略。 |
 | `debug` | `false` | 输出不含密钥的诊断信息。 |
+| `html` | 空 | dry-run 时额外写一份自包含 HTML 预览到该路径（相对 workspace）。 |
 
 ### webhook 的两种写法
 
@@ -77,7 +78,7 @@ webhook: ${{ secrets.WECOM_KEY }}
 
 ```yaml
 - id: wecom
-  uses: teriyakiushi/dmao-wecom-notifier@v1
+  uses: teriyakiushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -104,8 +105,8 @@ webhook: ${{ secrets.WECOM_KEY }}
 
 ```text
 .github/wecom-notify/
-├── dmao-push.yml          # 只处理 push
-├── dmao-pull_request.yml  # 只处理 pull_request
+├── wecom-push.yml          # 只处理 push
+├── wecom-pull_request.yml  # 只处理 pull_request
 ├── default.yml            # 可选兜底
 ```
 
@@ -114,7 +115,7 @@ webhook: ${{ secrets.WECOM_KEY }}
 对当前事件名（如 `push`）依次查找：
 
 1. 精确匹配：`push.yml`、`push.yaml`；
-2. 后缀匹配：`*-push.yml`、`*-push.yaml`，例如 `dmao-push.yml`；
+2. 后缀匹配：`*-push.yml`、`*-push.yaml`，例如 `wecom-push.yml`；
 3. 如果 1+2 匹配到多个文件 → `E_TEMPLATE_AMBIGUOUS`，不会猜；
 4. 没有事件文件时，使用 `default.yml`、`default.yaml`、`_default.yml` 或 `_default.yaml`（多个默认文件也会报错）；
 5. 都没有 → 使用 `preset` / 当前事件预设。
@@ -124,7 +125,7 @@ webhook: ${{ secrets.WECOM_KEY }}
 - 只扫描目录第一层，不递归；跳过以 `.` 开头的文件。
 - 只接受 `.yml` / `.yaml`。
 - 事件名只允许字母、数字、`_`、`.`、`-`。
-- 同一事件保留一个文件即可，不要同时放 `push.yml` 和 `dmao-push.yml`。
+- 同一事件保留一个文件即可，不要同时放 `push.yml` 和 `wecom-push.yml`。
 - 目录可以是别的路径；用 `template-dir` 指定，路径必须位于 workspace 内。
 - 显式 `template` 优先于目录查找；`payload` 又优先于 `template`。
 
@@ -149,7 +150,7 @@ template_card:
 **B. 配置包装**：顶层没有 `msgtype`，只允许 `extends`、`vars`、`overrides`。
 
 ```yaml
-# .github/wecom-notify/dmao-push.yml
+# .github/wecom-notify/wecom-push.yml
 extends: push
 vars:
   environment: production
@@ -236,9 +237,9 @@ with:
     分支: main
     耗时: 2m13s
   links: |
-    查看运行 | https://github.com/teriyakiushi/dmao-wecom-notifier/actions
-    查看提交 | https://github.com/teriyakiushi/dmao-wecom-notifier/commit/abc123
-  link-url: https://github.com/teriyakiushi/dmao-wecom-notifier/actions
+    查看运行 | https://github.com/teriyakiushi/wecom-notifier/actions
+    查看提交 | https://github.com/teriyakiushi/wecom-notifier/commit/abc123
+  link-url: https://github.com/teriyakiushi/wecom-notifier/actions
 ```
 
 `info` / `links` 的内容会作为字符串渲染（支持 `{{ }}`），不会自动截断；超过推荐长度时给 warning，而不是静默裁剪。纯文本行没有 `type` 也可以合法，不要求 `url`。
@@ -248,7 +249,7 @@ with:
 ### dry-run
 
 ```yaml
-- uses: teriyakiushi/dmao-wecom-notifier@v1
+- uses: teriyakiushi/wecom-notifier@v1
   with:
     dry-run: "true"
     preset: card
@@ -259,6 +260,7 @@ with:
 - 渲染、剪空、归一、截断、校验仍会执行。
 - 本地 CLI 在 16KB 以内直接打印 JSON；Action 中写入 `payload` 输出和 step summary，日志不打印大 payload。
 - 校验失败时 `fail-on-error: true` 会让 step 失败；设为 `false` 只 warning。
+- 加 `html: preview.html` 会同时写一份可视化预览（手机气泡 + warnings + payload），便于在 CI 里作为 artifact 上传后查看。
 
 ### 失败与退出码
 

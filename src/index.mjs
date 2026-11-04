@@ -11,6 +11,7 @@ import { truncateMessage } from './message/truncate.mjs';
 import { validateMessage } from './message/validate.mjs';
 import { parseWebhook, sendToWeCom } from './message/send.mjs';
 import { getPreset, resolvePresetName } from './presets/index.mjs';
+import { writePreviewHtml } from './preview/html.mjs';
 import { renderMessage } from './template/render.mjs';
 import {
   byteLength,
@@ -255,6 +256,8 @@ export async function runNotify({
   const payloadText = JSON.stringify(final, null, 2);
   const size = byteLength(payloadText);
 
+  const previewPath = writePreview({ inputs, final, warnings, eventName, origin: base.origin, size, cwd, now, logger });
+
   if (!validation.ok) {
     if (inputs.failOnError) {
       throw new ValidationError(
@@ -279,6 +282,7 @@ export async function runNotify({
       errcode: undefined,
       errmsg: undefined,
       dryRun: inputs.dryRun,
+      previewPath,
     };
     writeResult({ inputs, env, result, payloadText, logger });
     return result;
@@ -339,6 +343,7 @@ export async function runNotify({
     errmsg: sendResult?.errmsg,
     attempts: sendResult?.attempts,
     dryRun: inputs.dryRun,
+    previewPath,
   };
 
   writeResult({ inputs, env, result, payloadText, logger });
@@ -356,6 +361,27 @@ function parseVarsLike(text, label) {
     });
   }
   return parsed;
+}
+
+/**
+ * Optional local debugging aid: dump the rendered message as an HTML page.
+ * Silently skipped when the `html` input is empty.
+ */
+function writePreview({ inputs, final, warnings, eventName, origin, size, cwd, now, logger }) {
+  const file = String(inputs.html ?? '').trim();
+  if (!file) return undefined;
+  const target = writePreviewHtml({
+    file,
+    cwd,
+    message: final,
+    eventName,
+    origin,
+    warnings,
+    bytes: size,
+    generatedAt: now,
+  });
+  logger.info(`[preview] wrote ${target}`);
+  return target;
 }
 
 function writeResult({ inputs, env, result, payloadText, logger }) {
