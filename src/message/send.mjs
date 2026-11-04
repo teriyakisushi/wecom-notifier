@@ -149,7 +149,7 @@ export async function sendToWeCom({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'dmao-wecom-notifier',
+          'User-Agent': 'wecom-notifier',
         },
         body,
         signal: controller.signal,

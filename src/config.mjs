@@ -216,7 +216,7 @@ function validateEventName(eventName) {
  *
  * Accepted names (first match wins; multiple matches are an error):
  *   <event>.yml / <event>.yaml
- *   <prefix>-<event>.yml / <prefix>-<event>.yaml   (e.g. dmao-push.yml)
+ *   <prefix>-<event>.yml / <prefix>-<event>.yaml   (e.g. wecom-push.yml)
  *   default.yml / _default.yml (only when no event file exists)
  */
 export function findEventTemplate({ workspace, templateDir, eventName }) {
@@ -270,7 +270,7 @@ export function findEventTemplate({ workspace, templateDir, eventName }) {
     throw new ConfigError(`Multiple templates match event "${eventName}": ${matches.join(', ')}`, {
       code: 'E_TEMPLATE_AMBIGUOUS',
       path: templateDir,
-      hint: 'Keep one file per event, e.g. push.yml or dmao-push.yml, but not both.',
+      hint: 'Keep one file per event, e.g. push.yml or wecom-push.yml, but not both.',
     });
   }
   if (matches.length === 1) {

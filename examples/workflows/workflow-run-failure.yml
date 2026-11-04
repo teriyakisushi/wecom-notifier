@@ -14,7 +14,7 @@ jobs:
     if: github.event.workflow_run.conclusion != 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: teriyakiushi/dmao-wecom-notifier@v1
+      - uses: teriyakiushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
           preset: workflow_run

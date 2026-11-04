@@ -1,13 +1,13 @@
 # Contributing
 
-Thanks for improving `dmao-wecom-notifier`. This is a small, dependency-light
+Thanks for improving `wecom-notifier`. This is a small, dependency-light
 Composite Action; please keep changes focused and testable.
 
 ## Setup
 
 ```bash
-git clone https://github.com/teriyakiushi/dmao-wecom-notifier.git
-cd dmao-wecom-notifier
+git clone https://github.com/teriyakiushi/wecom-notifier.git
+cd wecom-notifier
 npm install
 ```
 

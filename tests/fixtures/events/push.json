@@ -4,9 +4,9 @@
   "after": "2222222222222222222222222222222222222222",
   "repository": {
     "id": 1001,
-    "name": "dmao-wecom-notifier",
-    "full_name": "teriyakiushi/dmao-wecom-notifier",
-    "html_url": "https://github.com/teriyakiushi/dmao-wecom-notifier",
+    "name": "wecom-notifier",
+    "full_name": "teriyakiushi/wecom-notifier",
+    "html_url": "https://github.com/teriyakiushi/wecom-notifier",
     "description": "Send GitHub events to WeCom with templates and cards",
     "default_branch": "main",
     "private": false,
@@ -30,7 +30,7 @@
       "id": "2222222222222222222222222222222222222222",
       "message": "feat: add WeCom notifier\n\nDetails in the body.",
       "timestamp": "2026-11-02T07:00:00Z",
-      "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/commit/2222222222222222222222222222222222222222",
+      "url": "https://github.com/teriyakiushi/wecom-notifier/commit/2222222222222222222222222222222222222222",
       "author": {
         "name": "Teriyaki Ushi",
         "email": "teriyakiushi@users.noreply.github.com",
@@ -46,7 +46,7 @@
       "id": "3333333333333333333333333333333333333333",
       "message": "docs: document per-event templates",
       "timestamp": "2026-11-02T07:05:00Z",
-      "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/commit/3333333333333333333333333333333333333333",
+      "url": "https://github.com/teriyakiushi/wecom-notifier/commit/3333333333333333333333333333333333333333",
       "author": {
         "name": "Teriyaki Ushi",
         "email": "teriyakiushi@users.noreply.github.com",
@@ -63,7 +63,7 @@
     "id": "3333333333333333333333333333333333333333",
     "message": "docs: document per-event templates",
     "timestamp": "2026-11-02T07:05:00Z",
-    "url": "https://github.com/teriyakiushi/dmao-wecom-notifier/commit/3333333333333333333333333333333333333333",
+    "url": "https://github.com/teriyakiushi/wecom-notifier/commit/3333333333333333333333333333333333333333",
     "author": {
       "name": "Teriyaki Ushi",
       "email": "teriyakiushi@users.noreply.github.com",

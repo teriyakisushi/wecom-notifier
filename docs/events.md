@@ -204,7 +204,7 @@ overrides:
 仓库里按事件放文件即可覆盖自动预设：
 
 ```yaml
-# .github/wecom-notify/dmao-push.yml
+# .github/wecom-notify/wecom-push.yml
 extends: push
 overrides:
   template_card:

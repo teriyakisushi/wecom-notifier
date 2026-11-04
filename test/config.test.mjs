@@ -25,7 +25,7 @@ test('finds a named per-event template in the template directory', async () => {
     const dir = join(workspace, '.github', 'wecom-notify');
     await mkdir(dir, { recursive: true });
     await writeFile(
-      join(dir, 'dmao-push.yml'),
+      join(dir, 'wecom-push.yml'),
       'msgtype: text\ntext:\n  content: "hello {{ repo.name }}"\n',
       'utf8',
     );
@@ -37,7 +37,7 @@ test('finds a named per-event template in the template directory', async () => {
     });
 
     assert.equal(result.sourceKind, 'event-template');
-    assert.equal(result.sourcePath, '.github/wecom-notify/dmao-push.yml');
+    assert.equal(result.sourcePath, '.github/wecom-notify/wecom-push.yml');
     assert.equal(result.document.kind, 'message');
     assert.equal(result.document.message.msgtype, 'text');
   });

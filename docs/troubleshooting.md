@@ -37,7 +37,7 @@ on:
 ```yaml
 steps:
   - uses: actions/checkout@v4   # 需要模板文件时必须有
-  - uses: teriyakiushi/dmao-wecom-notifier@v1
+  - uses: teriyakiushi/wecom-notifier@v1
     with:
       webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -105,7 +105,7 @@ with:
 
 ```text
 .github/wecom-notify/push.yml
-.github/wecom-notify/dmao-push.yml
+.github/wecom-notify/wecom-push.yml
 ```
 
 只保留一个。默认文件同理：`default.yml` 和 `_default.yml` 不能同时存在。
@@ -258,7 +258,7 @@ node dist/index.mjs --dry-run \
 # 指定卡片
 node dist/index.mjs --dry-run --preset card \
   --title 部署完成 --content "v1.2.3" \
-  --link-url https://github.com/teriyakiushi/dmao-wecom-notifier
+  --link-url https://github.com/teriyakiushi/wecom-notifier
 ```
 
 模拟 Action 环境：
@@ -282,7 +282,7 @@ node dist/index.mjs
 
 1. **checkout**：模板文件在仓库里，但 runner 没 checkout。
 2. **路径**：`template-dir` 相对 workspace；`working-directory` 不会改变 `GITHUB_WORKSPACE`。
-3. **action 版本**：`uses: teriyakiushi/dmao-wecom-notifier@v1` 是否指向包含 `dist/` 的 tag；开发时用 `uses: ./`。
+3. **action 版本**：`uses: teriyakiushi/wecom-notifier@v1` 是否指向包含 `dist/` 的 tag；开发时用 `uses: ./`。
 4. **Node 版本**：Action 要求 Node ≥18；self-hosted runner 可能更旧。
 5. **secret**：fork PR、environment 保护规则、组织 secret 权限。
 6. **事件名**：`GITHUB_EVENT_NAME` 和你以为的不一样；例如 Star 是 `watch`，不是 `star`。

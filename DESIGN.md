@@ -1,7 +1,7 @@
-# dmao-wecom-notifier 设计方案
+# wecom-notifier 设计方案
 
 > 状态：v0.1 设计稿，**待确认**（2026-11-02）
-> 目标仓库：`dmao-wecom-notifier`（当前目录）
+> 目标仓库：`wecom-notifier`（当前目录）
 > 调研依据：企业微信「群机器人配置说明」(91770)、企业微信全局错误码 (90313)、GitHub Composite Action 文档、GitHub Events 文档、现有 `webcom.html` 构建器。
 > 若同意第 14 节的推荐项，回复「按推荐执行」即可开始实现。
 
@@ -13,9 +13,9 @@
 
 做一个 **GitHub Composite Action**，把 GitHub 仓库事件以企业微信群机器人消息的形式推送，并支持从三个层次自定义消息体：
 
-1. **零配置**：`uses: <owner>/dmao-wecom-notifier@v1` + `webhook`，自动根据事件生成一张排版好的模板卡片。
+1. **零配置**：`uses: <owner>/wecom-notifier@v1` + `webhook`，自动根据事件生成一张排版好的模板卡片。
 2. **Action YAML 内定制**：`preset: card` 加 `title` / `subtitle` / `content` / `info` / `links` / `image-url` 等扁平输入，或 `overrides` 深合并任意字段。
-3. **仓库内自定义文本**：在 `.github/wecom-notify/` 下按事件拆分（如 `push.yml` / `dmao-push.yml`），每个文件只负责一个事件的消息体，支持 `{{ }}` 变量、`$if` 条件、`$each` 循环和常用过滤器；也可在 Action 的 `payload:` 中直接内联。
+3. **仓库内自定义文本**：在 `.github/wecom-notify/` 下按事件拆分（如 `push.yml` / `wecom-push.yml`），每个文件只负责一个事件的消息体，支持 `{{ }}` 变量、`$if` 条件、`$each` 循环和常用过滤器；也可在 Action 的 `payload:` 中直接内联。
 
 同时提供：
 
@@ -112,7 +112,7 @@
 ### 3.1 零配置
 
 ```yaml
-- uses: <owner>/dmao-wecom-notifier@v1
+- uses: <owner>/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -122,7 +122,7 @@
 ### 3.2 选预设 + 深合并
 
 ```yaml
-- uses: <owner>/dmao-wecom-notifier@v1
+- uses: <owner>/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: pull_request
@@ -136,7 +136,7 @@
 ### 3.3 简单卡片（Action YAML 内完成 Title / subtitle / Info / Card）
 
 ```yaml
-- uses: <owner>/dmao-wecom-notifier@v1
+- uses: <owner>/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -157,7 +157,7 @@
 ### 3.4 内联完整消息体
 
 ```yaml
-- uses: <owner>/dmao-wecom-notifier@v1
+- uses: <owner>/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |
@@ -176,17 +176,17 @@
 
 ```text
 .github/wecom-notify/
-├── dmao-push.yml          # 只负责 push
-├── dmao-pull_request.yml  # 只负责 pull_request
-├── dmao-release.yml
-└── dmao-default.yml       # 可选兜底（或 default.yml）
+├── wecom-push.yml          # 只负责 push
+├── wecom-pull_request.yml  # 只负责 pull_request
+├── wecom-release.yml
+└── wecom-default.yml       # 可选兜底（或 default.yml）
 ```
 
-命名支持 `<event>.yml`、`<event>.yaml`、`*-<event>.yml`、`*-<event>.yaml`（如 `dmao-push.yml`）；同一事件匹配多个文件会报错。`default.yml` / `_default.yml` 作为无事件文件时的兜底。也可显式指定单个文件：
+命名支持 `<event>.yml`、`<event>.yaml`、`*-<event>.yml`、`*-<event>.yaml`（如 `wecom-push.yml`）；同一事件匹配多个文件会报错。`default.yml` / `_default.yml` 作为无事件文件时的兜底。也可显式指定单个文件：
 
 ```yaml
 - uses: actions/checkout@v4        # 读取模板文件必须先 checkout
-- uses: <owner>/dmao-wecom-notifier@v1
+- uses: <owner>/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     template: .github/wecom-notify/push.yml
@@ -246,7 +246,7 @@ overrides:
 ### 3.6 Dry-run
 
 ```yaml
-- uses: <owner>/dmao-wecom-notifier@v1
+- uses: <owner>/wecom-notifier@v1
   with:
     dry-run: "true"
     preset: card
@@ -272,7 +272,7 @@ preset / auto ───┘                                                   │
 1. `payload` 非空 → 作为基础消息/配置；忽略自动目录，若同时显式设置 `template` 则报错，避免二义性。
 2. 否则 `template` / `template-dir`：
    - `template` 显式文件优先；文件不存在 → 报错。
-   - 否则在 `template-dir`（默认 `.github/wecom-notify`）按当前事件查找 `<event>.yml|yaml` 或 `*-<event>.yml|yaml`（如 `dmao-push.yml`）；多个匹配 → 报错；无匹配则找 `default.yml` / `_default.yml`；都没有则回落到预设。
+   - 否则在 `template-dir`（默认 `.github/wecom-notify`）按当前事件查找 `<event>.yml|yaml` 或 `*-<event>.yml|yaml`（如 `wecom-push.yml`）；多个匹配 → 报错；无匹配则找 `default.yml` / `_default.yml`；都没有则回落到预设。
    - `template-dir: ''` → 禁用自动查找。
 3. 否则 `preset`（默认 `auto`）。`preset: none` 表示无基础消息，必须配合 `payload`/模板，否则报错。
 4. 若模板/配置中有 `extends`，用 `extends` 对应的预设作为基础消息；`extends: auto` 使用当前事件。
@@ -821,7 +821,7 @@ CLI 支持 `--dry-run`、`--event`、`--event-name`、`--inputs`、`--template`�
 ## 14. 确认记录与剩余信息
 
 > 已确认：1（定制模型）、3（预设范围）、4（构建器）、5（运行时）、6（仓库信息）。
-> 第 2 项按「一事件一文件」调整：默认目录 `.github/wecom-notify/`，`<event>.yml` 或 `*-<event>.yml`（如 `dmao-push.yml`），`default.yml` 兜底；`template` 显式指定单文件，`template-dir` 可改/禁用。
+> 第 2 项按「一事件一文件」调整：默认目录 `.github/wecom-notify/`，`<event>.yml` 或 `*-<event>.yml`（如 `wecom-push.yml`），`default.yml` 兜底；`template` 显式指定单文件，`template-dir` 可改/禁用。
 
 1. **定制模型**：采用「自动预设 + `overrides` 深合并 + `preset: card` 扁平字段 + 内联 `payload`/仓库模板（`{{ }}` + `$if`/`$each`）」的组合；模板 YAML/JSON 都支持；不引入 Handlebars/Mustache。**已确认。**
 2. **模板组织**：一事件一文件，避免所有消息体挤在一个 YAML 里；目录与文件名规则见 §3.5 / §4.1。**已确认（按你的建议调整）。**
@@ -841,7 +841,7 @@ CLI 支持 `--dry-run`、`--event`、`--event-name`、`--inputs`、`--template`�
     "card_type": "text_notice",
     "source": { "desc": "GitHub", "desc_color": 0 },
     "main_title": {
-      "title": "📦 dmao-wecom-notifier",
+      "title": "📦 wecom-notifier",
       "desc": "octocat 推送到 main"
     },
     "emphasis_content": { "title": "3", "desc": "次提交" },

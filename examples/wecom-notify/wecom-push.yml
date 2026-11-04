@@ -1,4 +1,4 @@
-# 复制到 .github/wecom-notify/dmao-push.yml
+# 复制到 .github/wecom-notify/wecom-push.yml
 # 继承 push 预设，只改来源、标题和键值行。
 extends: push
 
