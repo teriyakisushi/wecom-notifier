@@ -14,9 +14,10 @@ examples/
 │   ├── pr-card.yml              # 复制到 .github/wecom-notify/pull_request.yml
 │   ├── wecom-workflow_run-variants.yml  # variants/when/for 可读写法示例
 │   └── default.yml              # 复制到 .github/wecom-notify/default.yml
-└── kawaii/
-    ├── wecom-push.yml            # 猫娘风 push 图文卡片
-    ├── wecom-workflow_run.yml    # 猫娘风 CI 图文卡片
+└── custom/
+    ├── wecom-push.yml            # push 图文卡片（整活版）
+    ├── wecom-ci-failure.yml      # 只发失败：CI 挂了才发
+    ├── wecom-workflow_run.yml    # 绿了 / 寄了 / 凉了 / 还在跑
     └── README.md                 # 图片选型与字段长度限制
 ```
 

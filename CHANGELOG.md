@@ -24,9 +24,22 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   auto-preset snapshot per event.
 - Coverage gate: `npm run test:coverage` enforces `coverageThreshold` (lines 85 /
   branches 75 / functions 85) using Node's built-in coverage.
+- Preview CLI: `npm run preview -- [模板名...]` renders the `examples/custom/`
+  cards through the same `runNotify` path the action uses, writes an HTML
+  preview, and `--send` posts them to the webhook from `.env` or
+  `INPUT_WEBHOOK` (never argv). `--conclusion` / `--status` patch a temporary
+  fixture instead of touching `tests/fixtures/`.
+- Interactive preview: `npm run preview:i` walks the same flow as a menu —
+  template, verdict (only when the card really branches on it), dry-run or
+  send — and loops until `q`.
+- `examples/custom/wecom-ci-failure.yml`: a failure-only `workflow_run` card,
+  meant to sit behind `if: workflow_run.conclusion != 'success'`.
 
 ### Changed
 
+- `examples/kawaii/` is replaced by `examples/custom/`, which keeps the push
+  card, rewrites the CI card with a conclusion-branching verdict line, and adds
+  the failure-only variant.
 - `examples/wecom-notify/pr-card.yml` keeps the PR title within the recommended
   26-character card title so the strict template lint stays clean.
 - CI now runs `lint:templates` on every Node version, and `build:check` plus the
