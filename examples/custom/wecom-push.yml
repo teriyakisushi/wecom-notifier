@@ -1,39 +1,33 @@
-# 猫娘风格 push 通知 —— 图文卡片（template_card / news_notice）
-#
-# 用法：复制到 .github/wecom-notify/wecom-push.yml，workflow 里加 template-dir 即可。
-# 图片：safebooru 公开直链（rating:safe，1280x720，ratio 1.78），
-#       企业微信要求 card_image.aspect_ratio 落在 (1.3, 2.25)，1.78 刚好合规。
-
 msgtype: template_card
 
 template_card:
   card_type: news_notice
 
   source:
-    desc: "🐾 喵喵电台"
+    desc: "Push|🐾 很不高兴"
     desc_color: 3
 
   main_title:
-    title: "🐱 主人～新爪印掉下来啦喵！"
+    title: "喂老登，这里有新的Push通知"
     desc: "{{ actor | truncate(12) }} 在 {{ ref_name | truncate(14) }} 踩了一爪"
 
   card_image:
-    url: "https://safebooru.org/images/854/fa20e9837540717cda2743d5cad4ff81.png"
+    url: "https://safebooru.org//images/1111/9ead22a2a540dc663a6e0fba5b71ccc3cf0c5ace.jpg"
     aspect_ratio: 1.78
 
   image_text_area:
     type: 1
     url: "{{ compare_url | default(repo.html_url) }}"
-    title: "💖 点这里看猫猫叼来的改动"
+    title: "点这里看改动"
     desc: "{{ head_commit.first_line | default('这次没有新提交喵…') | truncate(80) }}"
-    image_url: "https://safebooru.org/images/854/fa20e9837540717cda2743d5cad4ff81.png"
+    image_url: "https://safebooru.org//images/1111/9ead22a2a540dc663a6e0fba5b71ccc3cf0c5ace.jpg"
 
   # 没有提交（分支创建 / 空推）时整块消失，避免空 quote_text 被校验拦下。
   quote_area:
     $if: commit_count > 0
     type: 1
     url: "{{ compare_url | default(repo.html_url) }}"
-    title: "📮 猫猫把提交叼过来啦"
+    title: "📮 提交信息在这里"
     quote_text:
       $each: commits
       $limit: 4
@@ -45,17 +39,17 @@ template_card:
       value: "{{ repo.full_name | truncate(24) }}"
     - keyname: 分支
       value: "{{ ref_name | default('?') }}"
-    - keyname: 爪印数
+    - keyname: 提交
       value: "{{ commit_count }} 个提交"
-    - keyname: 推爪子的人
+    - keyname: 作者
       value: "{{ actor }}"
 
   jump_list:
-    - title: 对比喵
+    - title: Comparison
       url: "{{ compare_url | default(repo.html_url) }}"
-    - title: 看提交
+    - title: Commits
       url: "{{ commit_url | default(repo.html_url) }}"
-    - title: 仓库
+    - title: Repo
       url: "{{ repo.html_url }}"
 
   card_action:

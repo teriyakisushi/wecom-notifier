@@ -1,0 +1,60 @@
+# CI 失败通知 —— 图文卡片（template_card / news_notice）
+#
+# lint:event workflow_run
+# 只发失败：workflow 里挂 if: github.event.workflow_run.conclusion != 'success'
+# 文件名不以 -workflow_run.yml 结尾，template-dir 的自动匹配不会命中它；
+# 用它就显式传 template: .github/wecom-notify/wecom-ci-failure.yml。
+#
+# 图片是 1:1 方图，企业微信要求 card_image.aspect_ratio 在 (1.3, 2.25)，
+# 取最小的 1.33，方图上下会被裁掉一点。
+
+msgtype: template_card
+
+template_card:
+  card_type: news_notice
+
+  source:
+    desc: "CI Notice|寄了"
+    desc_color: 2
+
+  main_title:
+    title: "💀 喂老登，CI 寄了"
+    desc: "{{ workflow | default('CI') | truncate(10) }} 在 {{ workflow_run.head_branch | default(ref_name) | truncate(8) }} 凉透"
+
+  card_image:
+    url: "https://safebooru.org//images/4438/f0f1691c49737a86d1db5e5372f7961a1567cb1b.png"
+    aspect_ratio: 1.33
+
+  vertical_content_list:
+    - title: "🥲 一个都没过"
+      desc: "红一片，笑死我了🤣"
+
+  horizontal_content_list:
+    - keyname: 分支
+      value: "{{ workflow_run.head_branch | default(ref_name) | default('?') }}"
+    - keyname: 结果
+      value: "{{ workflow_run.conclusion | default('failure') }}"
+    - keyname: 次数
+      value: "第 {{ workflow_run.run_number | default(run_number) | default('?') }} 次"
+    - keyname: 仓库
+      value: "{{ repo.full_name | truncate(24) }}"
+
+  # 没有 head_commit 的运行时整块消失，避免空 quote_text 被校验拦下。
+  quote_area:
+    $if: workflow_run.head_commit
+    type: 1
+    url: "{{ workflow_run.html_url | default(run_url) }}"
+    title: "📮 就这一下搞崩的"
+    quote_text: "{{ workflow_run.head_commit.message | firstLine | truncate(180) }}"
+
+  jump_list:
+    - title: Logs
+      url: "{{ workflow_run.html_url | default(run_url) }}"
+    - title: Commits
+      url: "{{ repo.html_url }}/commit/{{ workflow_run.head_sha | default(sha) }}"
+    - title: Repo
+      url: "{{ repo.html_url }}"
+
+  card_action:
+    type: 1
+    url: "{{ workflow_run.html_url | default(run_url) }}"
