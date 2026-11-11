@@ -27,6 +27,8 @@ npm test
 | `npm run smoke` | 用 dist + push fixture dry-run |
 | `npm run lint:syntax` | 对 `src`/`scripts`/`test` 做 `node --check` |
 | `npm run lint:templates` | 渲染 `examples/**/*.yml` 并检查报错/字段超长（`--strict`） |
+| `npm run preview -- [模板名...]` | 渲染 `examples/custom/*.yml` + 写 HTML 预览；加 `--send` 直接发群 |
+| `npm run preview:i` | 交互式菜单：选模板 → 选结论 → dry-run / 真发 |
 | `npm run test:coverage` | 跑测试并校验 `coverageThreshold`（默认 lines 85 / branches 75 / functions 85） |
 
 示例：
@@ -48,10 +50,47 @@ npm run dev -- --dry-run --preset card \
 dry-run 只打印 JSON，看不出真实卡片的排版。加 `--html` 会额外生成一个自包含的 HTML 预览页（手机气泡 + warnings + payload 面板，支持亮/暗主题）：
 
 ```bash
-npm run dev -- --dry-run   --template examples/kawaii/wecom-push.yml   --event tests/fixtures/events/push.json   --event-name push   --html .research/tmp/preview.html
+npm run dev -- --dry-run   --template examples/custom/wecom-push.yml   --event tests/fixtures/events/push.json   --event-name push   --html .research/tmp/preview.html
 ```
 
 预览页不参与发送，也不影响 `payload` 输出；Action 里也可以用 `html:` 输入打开它（产物落在 workspace 内，记得按需上传 artifact）。
+
+### 预览 examples/custom 模板（可直接真发）
+
+`scripts/preview-custom.mjs` 是给 `examples/custom/` 准备的小跑腿：按文件名推断事件、自动配 fixture、批量渲染、顺手写 HTML，加 `--send` 就直接发到群里。
+
+```bash
+npm run preview -- --list                        # 看有哪些模板、各自什么事件
+npm run preview                                  # 全部 dry-run，预览写到 .research/tmp/<模板名>.html
+npm run preview -- ci                            # 名字片段匹配（wecom-ci-failure.yml）
+npm run preview -- ci --send                     # 真发（webhook 取 .env / INPUT_WEBHOOK）
+npm run preview -- workflow_run --conclusion success   # 临时改 conclusion，看“绿了”那张卡
+npm run preview -- ci --payload                  # 额外打印渲染后的 JSON
+```
+
+- webhook 只从 `.env` 的 `WECOM_WEBHOOK` 或环境变量读，不落 argv、不打印；
+- `--conclusion` / `--status` 会复制一份临时 fixture 再改，不会动 `tests/fixtures/`；
+- 真发前建议先不带 `--send` 跑一遍，看 `.research/tmp/*.html` 的排版。
+
+### 交互式预览
+
+不想记参数就用 `npm run preview:i`（`scripts/preview-interactive.mjs`）：
+
+```text
+模板：
+  1) wecom-ci-failure.yml       [workflow_run] CI 失败通知 —— 图文卡片
+  2) wecom-push.yml             [push]
+  3) wecom-workflow_run.yml     [workflow_run]
+
+选择模板 [1-3, a=全部, q=退出] (1): 3
+结论 [1-6] (6):            # 只有模板里真写了 conclusion/status 分支才会问
+方式 [1=dry-run 2=真发] (1): 2
+```
+
+- 任何提示符下 `q` 退出，直接回车取括号里的默认值；
+- 选“真发”但 `.env` 没有 `WECOM_WEBHOOK` 时自动退回 dry-run，不会静默失败；
+- 跑完停在“回车再跑一次，q 退出”，可以连着对比几张卡；
+- 两个脚本共用 `scripts/lib/custom-preview.mjs`（枚举模板、推断事件、改 fixture、调 `runNotify`）。
 
 ## 3. 目录结构
 
@@ -84,6 +123,7 @@ npm run dev -- --dry-run   --template examples/kawaii/wecom-push.yml   --event t
 │   ├── build.mjs              # esbuild 打包 + --check
 │   ├── lint.mjs               # node --check
 │   ├── lint-templates.mjs     # examples 模板渲染 lint
+│   ├── preview-custom.mjs     # examples/custom 模板预览 / 真发
 │   └── check-coverage.mjs     # 覆盖率门槛
 ├── test/                      # node:test
 ├── tests/fixtures/events/     # 事件 payload
