@@ -10,7 +10,7 @@
 | [内置预设](events.md) | 每个 GitHub 事件生成什么卡片、`preset: card` 扁平输入 |
 | [企业微信格式](wecom.md) | 8 种消息、模板卡片字段、限制、错误码 |
 | [故障排查](troubleshooting.md) | 没消息、模板找不到、校验失败、企业微信错误码 |
-| [构建器](index.html) | 浏览器内可视化编辑、预览、导出 JSON/YAML 和 Action 步骤 |
+| [构建器](index.html) | 浏览器内可视化编辑、预览、导入模板看预览、导出 JSON/YAML 和 Action 步骤 |
 
 ## 贡献者
 
@@ -32,6 +32,8 @@
 ## 构建器
 
 打开 `docs/index.html` 即可使用，不需要安装依赖。它生成的是**消息体**（`.github/wecom-notify/<event>.yml`）；模板变量在导出时原样保留，不会替换成示例值。
+
+想先看现成模板的效果，点右上角「导入模板」，粘贴消息体（JSON 或 YAML，带 `msgtype`）或选一个 `.yml` 文件即可：`variants` / `$if` / `when` / `$each` 会先用当前事件的示例上下文展开，再渲染预览。导出的代码块可以点「放大」全屏查看。
 
 GitHub Pages 从 `docs/` 发布后，地址形如：
 

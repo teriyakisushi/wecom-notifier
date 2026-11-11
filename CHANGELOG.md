@@ -45,6 +45,19 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - CI now runs `lint:templates` on every Node version, and `build:check` plus the
   coverage gate on Node 22 to catch dist drift early.
 
+### Fixed
+
+- Builder preview no longer truncates tall cards: the right column was its own
+  scroll box and the stage hid overflow, so the bottom of a `news_notice` card
+  looked cut off. The page scrolls as one document again, images keep their
+  natural height, and the export block grows to `min(62vh, 780px)` with a
+  full-screen toggle.
+- Builder can import a message body (JSON or YAML) and show it in the preview.
+  `variants` / `$if` / `when` / `$each` are expanded against the current event's
+  sample context first, and the `workflow_run` sample now carries
+  `head_branch` / `run_number` / `html_url` / `head_sha` / `head_commit` so
+  imported CI cards render instead of leaking raw tokens.
+
 ## [0.1.0] - 2026-11-02
 
 ### Added

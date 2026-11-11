@@ -305,7 +305,7 @@ select.input { cursor: pointer; }
     radial-gradient(600px 260px at 10% -10%, rgba(37, 99, 235, .10), transparent 70%),
     linear-gradient(180deg, var(--panel-3), var(--panel-2));
   display: flex; justify-content: center; align-items: flex-start;
-  overflow: hidden;
+  overflow: visible;
 }
 .preview-stage > * { animation: rise .22s ease both; }
 @keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -390,7 +390,7 @@ select.input { cursor: pointer; }
 }
 .wx-article .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .wx-image { max-width: 100%; }
-.wx-image img { display: block; max-width: 100%; max-height: 380px; border-radius: 10px; box-shadow: 0 10px 30px -18px rgba(15, 23, 42, .5); }
+.wx-image img { display: block; max-width: 100%; max-height: none; border-radius: 10px; box-shadow: 0 10px 30px -18px rgba(15, 23, 42, .5); }
 .wx-image .meta { margin-top: 7px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; }
 
 /* ===== WeCom-style preview: template card ===== */
@@ -582,7 +582,7 @@ mark.tok-unknown { background: #ffe3e0; color: #b42318; border-bottom-color: #e0
 .code-bar .btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
 .code-bar .btn.primary:hover { background: #1d4ed8; }
 pre.code {
-  margin: 0; padding: 14px 15px; overflow: auto; max-height: 440px;
+  margin: 0; padding: 14px 15px; overflow: auto; max-height: min(62vh, 780px);
   font-family: var(--mono); font-size: 11.5px; line-height: 1.68;
   color: #d7e3f4; background: transparent; tab-size: 2; white-space: pre;
   overscroll-behavior: contain;
@@ -713,11 +713,9 @@ pre.code::-webkit-scrollbar-thumb { background: #2b3a54; border-radius: 999px; }
 /* ===== Responsive ===== */
 
 @media (min-width: 1121px) {
-  .col-right {
-    position: sticky; top: 78px; align-self: start;
-    max-height: calc(100vh - 94px); overflow-y: auto; overflow-x: hidden;
-    padding-right: 2px; scrollbar-gutter: stable;
-  }
+  /* The preview column used to be its own scroll box, so a tall card looked
+     cut off. Let the page scroll instead and keep the whole card visible. */
+  .col-right { position: static; align-self: start; }
 }
 @media (max-width: 1280px) {
   .type-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -747,7 +745,7 @@ pre.code::-webkit-scrollbar-thumb { background: #2b3a54; border-radius: 999px; }
   .wx-card { padding: 13px 14px; }
   .wx-article { grid-template-columns: minmax(0, 1fr) 68px; }
   .wx-article .thumb { width: 68px; height: 68px; }
-  pre.code { font-size: 10.5px; max-height: 340px; padding: 11px 12px; }
+  pre.code { font-size: 10.5px; max-height: 52vh; padding: 11px 12px; }
   .toast-wrap { right: 10px; bottom: 10px; left: 10px; align-items: stretch; }
   .toast { max-width: none; }
   .site-foot { padding: 0 14px 22px; }
@@ -760,6 +758,38 @@ pre.code::-webkit-scrollbar-thumb { background: #2b3a54; border-radius: 999px; }
   .logo { width: 36px; height: 36px; font-size: 16px; border-radius: 11px; }
   .panel-head .head-side { width: 100%; justify-content: flex-start; }
 }
+/* ===== Import dialog + expanded export code ===== */
+.modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 18px; }
+.modal[hidden] { display: none; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(9, 14, 24, .55); }
+.modal-card {
+  position: relative; width: min(900px, 100%); max-height: calc(100vh - 36px);
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 15px;
+  box-shadow: 0 30px 80px -30px rgba(2, 6, 23, .7);
+}
+.modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+.modal-head h2 { font-size: 14px; font-weight: 700; }
+.modal-head p { margin-top: 3px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+.modal-body { padding: 12px 16px; overflow: auto; }
+#import-text {
+  width: 100%; min-height: 240px; height: 46vh; resize: vertical; display: block;
+  padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: #0b1220; color: #d7e3f4; font-family: var(--mono); font-size: 12px;
+  line-height: 1.65; white-space: pre; tab-size: 2;
+}
+#import-text:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+.modal-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 11px 16px; border-top: 1px solid var(--line); background: var(--panel-2); }
+.modal-hint { flex: 1 1 160px; min-width: 120px; font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.modal-hint.err { color: #dc2626; font-weight: 550; }
+body.has-modal { overflow: hidden; }
+.code-shell.is-full {
+  position: fixed; inset: 16px; z-index: 70; display: flex; flex-direction: column;
+  box-shadow: 0 30px 90px -30px rgba(0, 0, 0, .75);
+}
+.code-shell.is-full pre.code { max-height: none; flex: 1 1 auto; font-size: 12px; }
+body.code-full { overflow: hidden; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
@@ -781,6 +811,7 @@ pre.code::-webkit-scrollbar-thumb { background: #2b3a54; border-radius: 999px; }
         <select id="event-select" aria-label="GitHub 事件"></select>
       </div>
       <span class="health" id="health-chip">检查中</span>
+      <button type="button" class="btn ghost" id="import-btn" title="粘贴 JSON / YAML 模板，直接看预览">导入模板</button>
       <a class="btn ghost" href="https://github.com/teriyakiushi/wecom-notifier" target="_blank" rel="noreferrer">GitHub ↗</a>
     </div>
   </div>
@@ -905,7 +936,7 @@ pre.code::-webkit-scrollbar-thumb { background: #2b3a54; border-radius: 999px; }
         <div class="code-shell">
           <div class="code-bar">
             <div class="bar-left"><span class="dots"><i></i><i></i><i></i></span><span id="code-lang">push.yml</span></div>
-            <div class="code-actions"><span class="tag" id="code-meta"></span><button type="button" class="btn sm" id="code-copy-2">复制</button></div>
+            <div class="code-actions"><span class="tag" id="code-meta"></span><button type="button" class="btn sm" id="code-full" aria-pressed="false" title="全屏查看导出的模板">⛶ 放大</button><button type="button" class="btn sm" id="code-copy-2">复制</button></div>
           </div>
           <pre class="code" id="export-code" tabindex="0"></pre>
         </div>
@@ -923,6 +954,28 @@ pre.code::-webkit-scrollbar-thumb { background: #2b3a54; border-radius: 999px; }
     <a href="https://github.com/teriyakiushi/wecom-notifier#readme" target="_blank" rel="noreferrer">使用说明</a>
   </span>
 </footer>
+
+<div class="modal" id="import-modal" hidden>
+  <div class="modal-backdrop" data-close-import></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="import-title">
+    <div class="modal-head">
+      <div>
+        <h2 id="import-title">导入模板看预览</h2>
+        <p>粘贴消息体（JSON 或 YAML，带 <code>msgtype</code>），也可以直接选一个 <code>.yml</code> / <code>.json</code> 模板文件。导入只改本页内存，不会上传。</p>
+      </div>
+      <button type="button" class="btn sm ghost" data-close-import aria-label="关闭导入窗口">✕</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="import-text" spellcheck="false" autocomplete="off" aria-label="要导入的模板内容" placeholder="msgtype: template_card&#10;template_card:&#10;  card_type: news_notice&#10;  main_title:&#10;    title: &quot;{{ repo.name }} 构建失败&quot;"></textarea>
+    </div>
+    <div class="modal-foot">
+      <label class="btn sm ghost" for="import-file">选择文件<input type="file" id="import-file" accept=".yml,.yaml,.json,.txt" hidden></label>
+      <span class="modal-hint" id="import-hint">支持纯消息体；YAML 子集与项目模板导出的格式一致。</span>
+      <button type="button" class="btn sm ghost" data-close-import>取消</button>
+      <button type="button" class="btn sm primary" id="import-apply">导入预览</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast-wrap" id="toasts" role="status" aria-live="polite"></div>
 
@@ -1302,8 +1355,16 @@ function sampleFor(event) {
       conclusion: 'success',
       status: 'completed',
       url: runUrl,
+      html_url: runUrl,
       branch: 'main',
-      event: 'push'
+      head_branch: base.ref_name,
+      event: 'push',
+      run_number: base.run_number,
+      head_sha: base.sha,
+      head_commit: {
+        message: 'fix: handle empty webhook payload',
+        html_url: base.detail_url
+      }
     };
     base.detail_url = runUrl;
     return base;
@@ -2677,6 +2738,309 @@ function yamlSequence(array, indent, out) {
     out.push(pad + '- ' + yamlScalarInline(item));
   });
 }
+/* ---------------------------------------------------------------------------
+ * YAML subset reader: block mappings/sequences, quoted and plain scalars,
+ * block scalars, and one-line flow collections. It covers the message bodies
+ * this page exports, plus the hand-written templates in examples/. Anything
+ * outside that subset raises an error instead of guessing.
+ * ------------------------------------------------------------------------- */
+function parseSimpleYAML(source) {
+  var raw = String(source == null ? '' : source).replace(/\r\n?/g, '\n').replace(/\t/g, '  ');
+  var rawLines = raw.split('\n');
+  var lines = [];
+  for (var i = 0; i < rawLines.length; i += 1) {
+    var line = rawLines[i];
+    var trimmedLine = line.trim();
+    if (i === 0 && trimmedLine === '---') continue;
+    if (!trimmedLine) {
+      lines.push({ blank: true, raw: line, index: i });
+      continue;
+    }
+    if (trimmedLine.charAt(0) === '#') {
+      var commentIndent = line.length - line.replace(/^ +/, '').length;
+      lines.push({ blank: false, comment: true, raw: line, indent: commentIndent, body: trimmedLine, index: i });
+      continue;
+    }
+    var indent = line.length - line.replace(/^ +/, '').length;
+    lines.push({ blank: false, raw: line, indent: indent, body: line.slice(indent), index: i });
+  }
+
+  var pos = 0;
+
+  function describe() {
+    var current = lines[pos];
+    return current ? '第 ' + (current.index + 1) + ' 行' : '文件末尾';
+  }
+
+  function fail(message) {
+    throw new Error(message + '（' + describe() + '）');
+  }
+
+  function skipBlank() {
+    while (pos < lines.length && (lines[pos].blank || lines[pos].comment)) pos += 1;
+  }
+
+  function parseBlock(indent) {
+    skipBlank();
+    if (pos >= lines.length) return null;
+    var line = lines[pos];
+    if (line.indent < indent) return null;
+    if (isSequenceLine(line.body)) return parseSequence(line.indent);
+    return parseMapping(line.indent);
+  }
+
+  function isSequenceLine(body) {
+    return body === '-' || body.slice(0, 2) === '- ';
+  }
+
+  function parseSequence(indent) {
+    var out = [];
+    while (pos < lines.length) {
+      skipBlank();
+      if (pos >= lines.length) break;
+      var line = lines[pos];
+      if (line.indent < indent) break;
+      if (line.indent > indent) fail('序列缩进不一致');
+      if (!isSequenceLine(line.body)) break;
+      var rest = line.body.slice(1).replace(/^ +/, '');
+      pos += 1;
+      if (!rest) {
+        var nested = parseBlock(indent + 1);
+        out.push(nested);
+        continue;
+      }
+      if (splitKey(rest)) {
+        lines.splice(pos, 0, { blank: false, raw: rest, indent: indent + 2, body: rest, index: line.index });
+        out.push(parseMapping(indent + 2));
+        continue;
+      }
+      out.push(parseValueText(rest, indent));
+    }
+    return out;
+  }
+
+  function parseMapping(indent) {
+    var out = {};
+    while (pos < lines.length) {
+      skipBlank();
+      if (pos >= lines.length) break;
+      var line = lines[pos];
+      if (line.indent < indent) break;
+      if (line.indent > indent) fail('映射缩进不一致');
+      if (isSequenceLine(line.body)) break;
+      var pair = splitKey(line.body);
+      if (!pair) fail('这一行既不是 key: value 也不是 - item');
+      pos += 1;
+      if (!pair.rest) {
+        var nextValue = parseNestedBlock(indent);
+        out[pair.key] = nextValue;
+        continue;
+      }
+      out[pair.key] = parseValueText(pair.rest, indent);
+    }
+    return out;
+  }
+
+  function parseNestedBlock(parentIndent) {
+    var save = pos;
+    skipBlank();
+    if (pos >= lines.length) return null;
+    var line = lines[pos];
+    if (line.indent > parentIndent) return parseBlock(line.indent);
+    if (line.indent === parentIndent && isSequenceLine(line.body)) return parseSequence(line.indent);
+    pos = save;
+    return null;
+  }
+
+  function splitKey(body) {
+    var quote = null;
+    for (var index = 0; index < body.length; index += 1) {
+      var ch = body.charAt(index);
+      if (quote) {
+        if (ch === '\\' && quote === '"') { index += 1; continue; }
+        if (ch === quote) quote = null;
+        continue;
+      }
+      if (ch === '"' || ch === '\'') { quote = ch; continue; }
+      if (ch === ':' && (index + 1 === body.length || body.charAt(index + 1) === ' ')) {
+        return { key: unquoteKey(body.slice(0, index).trim()), rest: body.slice(index + 1).trim() };
+      }
+    }
+    return null;
+  }
+
+  function unquoteKey(key) {
+    var value = String(key == null ? '' : key);
+    if (value.length > 1 && value.charAt(0) === '\'' && value.charAt(value.length - 1) === '\'') {
+      return value.slice(1, -1).replace(/''/g, '\'');
+    }
+    if (value.length > 1 && value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
+      return unescapeDouble(value.slice(1, -1));
+    }
+    return value;
+  }
+
+  function parseValueText(source, parentIndent) {
+    var value = String(source == null ? '' : source).replace(/^ +/, '');
+    var blockMatch = /^([|>])([+-]?)$/.exec(value);
+    if (blockMatch) return parseBlockScalar(blockMatch[1], blockMatch[2], parentIndent);
+    if (value.charAt(0) === '[' || value.charAt(0) === '{') return parseFlow(value);
+    return parseScalar(value);
+  }
+
+  function parseBlockScalar(style, chomp, parentIndent) {
+    var collected = [];
+    var blockIndent = -1;
+    var pendingBlank = 0;
+    while (pos < lines.length) {
+      var line = lines[pos];
+      if (line.blank) {
+        pendingBlank += 1;
+        pos += 1;
+        continue;
+      }
+      if (line.indent <= parentIndent) break;
+      if (blockIndent < 0) blockIndent = line.indent;
+      if (line.indent < blockIndent) break;
+      while (pendingBlank > 0) {
+        collected.push('');
+        pendingBlank -= 1;
+      }
+      collected.push(line.raw.slice(blockIndent));
+      pos += 1;
+    }
+    while (collected.length && !collected[collected.length - 1]) collected.pop();
+    var body = style === '|' ? collected.join('\n') : foldCollected(collected);
+    if (chomp === '-') return body;
+    return body ? body + '\n' : body;
+  }
+
+  function foldCollected(list) {
+    var out = '';
+    var blanks = 0;
+    for (var index = 0; index < list.length; index += 1) {
+      var line = list[index];
+      if (!line) { blanks += 1; continue; }
+      if (out) out += blanks ? new Array(blanks + 1).join('\n') : ' ';
+      out += line;
+      blanks = 0;
+    }
+    return out;
+  }
+
+  function parseScalar(value) {
+    var rawValue = String(value == null ? '' : value).replace(/^ +/, '').replace(/ +$/, '');
+    if (!rawValue) return '';
+    if (rawValue.charAt(0) === '\'' || rawValue.charAt(0) === '"') return unquoteScalar(rawValue);
+    var text = rawValue.replace(/ +#[^#]*$/, '').replace(/ +$/, '');
+    if (!text) return '';
+    if (/^(true|True|TRUE)$/.test(text)) return true;
+    if (/^(false|False|FALSE)$/.test(text)) return false;
+    if (/^(null|Null|NULL|~)$/.test(text)) return null;
+    if (/^-?\d+$/.test(text)) return parseInt(text, 10);
+    if (/^-?(?:\d+\.\d*|\.\d+)(?:e[-+]?\d+)?$/i.test(text)) return parseFloat(text);
+    return text;
+  }
+
+  function unquoteScalar(text) {
+    var quote = text.charAt(0);
+    if (quote === '\'') {
+      var single = /^'((?:[^']|'')*)'/.exec(text);
+      return single ? single[1].replace(/''/g, '\'') : text.slice(1);
+    }
+    var double = /^"((?:[^"\\]|\\.)*)"/.exec(text);
+    return double ? unescapeDouble(double[1]) : text.slice(1);
+  }
+
+  function unescapeDouble(value) {
+    return String(value).replace(/\\(u[0-9a-fA-F]{4}|.)/g, function (match, group) {
+      if (group.length > 1) return String.fromCharCode(parseInt(group.slice(1), 16));
+      var table = { n: '\n', t: '\t', r: '\r', '"': '"', '\\': '\\', '/': '/', '0': '\0' };
+      return Object.prototype.hasOwnProperty.call(table, group) ? table[group] : group;
+    });
+  }
+
+  function parseFlow(source) {
+    var text = String(source);
+    var index = 0;
+
+    function skipSpace() {
+      while (index < text.length && /\s/.test(text.charAt(index))) index += 1;
+    }
+
+    function readQuoted() {
+      var quote = text.charAt(index);
+      var start = index;
+      index += 1;
+      while (index < text.length) {
+        var ch = text.charAt(index);
+        if (ch === '\\' && quote === '"') { index += 2; continue; }
+        if (ch === quote) {
+          if (quote === '\'' && text.charAt(index + 1) === '\'') { index += 2; continue; }
+          index += 1;
+          break;
+        }
+        index += 1;
+      }
+      return unquoteScalar(text.slice(start, index));
+    }
+
+    function readValue() {
+      skipSpace();
+      var ch = text.charAt(index);
+      if (ch === '[') return readSequence();
+      if (ch === '{') return readMapping();
+      if (ch === '"' || ch === '\'') return readQuoted();
+      var start = index;
+      while (index < text.length && !/[,\]}]/.test(text.charAt(index))) index += 1;
+      return parseScalar(text.slice(start, index));
+    }
+
+    function readSequence() {
+      index += 1;
+      var out = [];
+      skipSpace();
+      if (text.charAt(index) === ']') { index += 1; return out; }
+      while (index < text.length) {
+        out.push(readValue());
+        skipSpace();
+        var ch = text.charAt(index);
+        if (ch === ',') { index += 1; continue; }
+        if (ch === ']') index += 1;
+        break;
+      }
+      return out;
+    }
+
+    function readMapping() {
+      index += 1;
+      var out = {};
+      skipSpace();
+      if (text.charAt(index) === '}') { index += 1; return out; }
+      while (index < text.length) {
+        skipSpace();
+        var key = readValue();
+        skipSpace();
+        if (text.charAt(index) === ':') index += 1;
+        out[String(key)] = readValue();
+        skipSpace();
+        var ch = text.charAt(index);
+        if (ch === ',') { index += 1; continue; }
+        if (ch === '}') index += 1;
+        break;
+      }
+      return out;
+    }
+
+    return readValue();
+  }
+
+  var document = parseBlock(0);
+  skipBlank();
+  if (pos < lines.length) fail('结尾有多余内容');
+  return document;
+}
+
 function toYAML(value) {
   var out = [];
   if (Array.isArray(value)) yamlSequence(value, 0, out);
@@ -4122,6 +4486,459 @@ const __test__ = {
    * Bindings + boot.
    * ========================================================================= */
 
+/* ---------------------------------------------------------------------------
+ * Import: read a message body (JSON or YAML) and load it into the builder so
+ * the preview shows exactly what those fields render as.
+ * ------------------------------------------------------------------------- */
+
+  function textOf(value) {
+    return value == null ? '' : String(value);
+  }
+
+  function arrayOf(value) {
+    return Array.isArray(value) ? value : [];
+  }
+
+/* ---------------------------------------------------------------------------
+ * Template directives — `variants`, `when`, `for` — are resolved with the
+ * sample context before an imported card is rendered, so importing one of the
+ * repository templates shows the row the bot would actually send.
+ * ------------------------------------------------------------------------- */
+
+  var DIRECTIVE_KEYS = ['when', 'for', 'item', 'as', 'limit', 'join', 'prefix', 'suffix'];
+
+  function isDirectiveKey(key) {
+    var name = String(key);
+    return name.charAt(0) === '$' || DIRECTIVE_KEYS.indexOf(name) >= 0 || name === 'variants';
+  }
+
+  function pickDirective(node, names) {
+    for (var index = 0; index < names.length; index += 1) {
+      var name = names[index];
+      if (Object.prototype.hasOwnProperty.call(node, name)) return { key: name, value: node[name] };
+    }
+    return null;
+  }
+
+  function splitTop(source, separator) {
+    var parts = [];
+    var depth = 0;
+    var quote = null;
+    var start = 0;
+    for (var index = 0; index < source.length; index += 1) {
+      var ch = source.charAt(index);
+      if (quote) {
+        if (ch === '\\' && quote === '"') { index += 1; continue; }
+        if (ch === quote) quote = null;
+        continue;
+      }
+      if (ch === '"' || ch === '\'') { quote = ch; continue; }
+      if (ch === '(') { depth += 1; continue; }
+      if (ch === ')') { depth = Math.max(0, depth - 1); continue; }
+      if (depth === 0 && source.slice(index, index + separator.length) === separator) {
+        parts.push(source.slice(start, index));
+        start = index + separator.length;
+        index += separator.length - 1;
+      }
+    }
+    parts.push(source.slice(start));
+    return parts;
+  }
+
+  function literalValue(source) {
+    var value = String(source).trim();
+    if (!value) return '';
+    if (value.charAt(0) === '\'' && value.charAt(value.length - 1) === '\'') {
+      return value.slice(1, -1).replace(/''/g, '\'');
+    }
+    if (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
+      return value.slice(1, -1).replace(/\\(.)/g, '$1');
+    }
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    if (value === 'null' || value === 'undefined') return null;
+    if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+    return undefined;
+  }
+
+  function expressionValue(source, context) {
+    var literal = literalValue(source);
+    if (literal !== undefined) return literal;
+    var path = String(source).trim();
+    if (path.charAt(0) === '(' && path.charAt(path.length - 1) === ')') path = path.slice(1, -1).trim();
+    return readPath(context, path);
+  }
+
+  function truthyValue(value) {
+    if (value === undefined || value === null || value === false || value === '') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    return true;
+  }
+
+  function sameValue(left, right) {
+    if (typeof left === 'number' || typeof right === 'number') return Number(left) === Number(right);
+    return String(left == null ? '' : left) === String(right == null ? '' : right);
+  }
+
+  function evalCondition(expression, context) {
+    var source = String(expression == null ? '' : expression).trim();
+    if (!source) return true;
+
+    var orParts = splitTop(source, '||');
+    if (orParts.length > 1) {
+      return orParts.some(function (part) { return evalCondition(part, context); });
+    }
+    var andParts = splitTop(source, '&&');
+    if (andParts.length > 1) {
+      return andParts.every(function (part) { return evalCondition(part, context); });
+    }
+    if (source.charAt(0) === '!' && source.charAt(1) !== '=') {
+      return !evalCondition(source.slice(1), context);
+    }
+
+    var comparators = ['==', '!=', '>=', '<=', '>', '<'];
+    for (var index = 0; index < comparators.length; index += 1) {
+      var op = comparators[index];
+      var pieces = splitTop(source, op);
+      if (pieces.length === 2) {
+        var left = expressionValue(pieces[0], context);
+        var right = expressionValue(pieces[1], context);
+        if (op === '==') return sameValue(left, right);
+        if (op === '!=') return !sameValue(left, right);
+        var a = Number(left);
+        var b = Number(right);
+        if (isNaN(a) || isNaN(b)) return false;
+        if (op === '>=') return a >= b;
+        if (op === '<=') return a <= b;
+        if (op === '>') return a > b;
+        return a < b;
+      }
+    }
+    return truthyValue(expressionValue(source, context));
+  }
+
+  function deepMergeInto(target, source) {
+    Object.keys(source || {}).forEach(function (key) {
+      var value = source[key];
+      if (value === null) {
+        delete target[key];
+        return;
+      }
+      if (isPlainObject(value) && isPlainObject(target[key])) {
+        deepMergeInto(target[key], value);
+        return;
+      }
+      target[key] = cloneValue(value);
+    });
+    return target;
+  }
+
+  function expandVariants(node, context) {
+    var variants = node.variants;
+    if (!isPlainObject(variants)) return node;
+    var copy = {};
+    Object.keys(node).forEach(function (key) {
+      if (key === 'variants') return;
+      copy[key] = cloneValue(node[key]);
+    });
+    var selector = readPath(context, String(variants.by == null ? '' : variants.by).trim());
+    var cases = isPlainObject(variants.cases) ? variants.cases : {};
+    var key = String(selector == null ? '' : selector);
+    var branch = Object.prototype.hasOwnProperty.call(cases, key) ? cases[key] : variants.default;
+    if (isPlainObject(branch)) deepMergeInto(copy, branch);
+    return copy;
+  }
+
+  function expandEach(node, eachKey, context) {
+    var source = readPath(context, String(node[eachKey] == null ? '' : node[eachKey]).trim());
+    var rows = Array.isArray(source) ? source : [];
+    var limitDirective = pickDirective(node, ['$limit', 'limit']);
+    if (limitDirective && limitDirective.value !== '' && limitDirective.value !== null) {
+      var limit = Number(limitDirective.value);
+      if (!isNaN(limit) && limit >= 0) rows = rows.slice(0, limit);
+    }
+    var asDirective = pickDirective(node, ['$as', 'as']);
+    var templateDirective = pickDirective(node, ['$item', 'item']);
+    var joinDirective = pickDirective(node, ['$join', 'join']);
+    var prefixDirective = pickDirective(node, ['$prefix', 'prefix']);
+    var suffixDirective = pickDirective(node, ['$suffix', 'suffix']);
+    var template = templateDirective ? templateDirective.value : '';
+    var separator = joinDirective && joinDirective.value != null ? String(joinDirective.value) : '';
+    var alias = asDirective && asDirective.value ? String(asDirective.value) : '';
+
+    var rendered = rows.map(function (row) {
+      var itemContext = Object.assign({}, context);
+      itemContext.item = row;
+      if (alias) itemContext[alias] = row;
+      if (typeof template === 'string') return renderTemplate(template, itemContext, { html: false });
+      if (isPlainObject(template)) return resolveTemplateNode(template, itemContext);
+      return row;
+    }).filter(function (value) { return value !== undefined && value !== null; });
+
+    var text = rendered.map(function (value) {
+      return typeof value === 'string' ? value : JSON.stringify(value);
+    }).join(separator);
+    if (prefixDirective && prefixDirective.value != null) text = String(prefixDirective.value) + text;
+    if (suffixDirective && suffixDirective.value != null) text = text + String(suffixDirective.value);
+    return text;
+  }
+
+  function resolveTemplateNode(node, context) {
+    if (Array.isArray(node)) {
+      var kept = [];
+      node.forEach(function (entry) {
+        if (isPlainObject(entry)) {
+          var condition = pickDirective(entry, ['$if', 'when']);
+          if (condition && !evalCondition(condition.value, context)) return;
+        }
+        var resolved = resolveTemplateNode(entry, context);
+        if (resolved !== undefined) kept.push(resolved);
+      });
+      return kept;
+    }
+    if (!isPlainObject(node)) return node;
+    if (node.variants) return resolveTemplateNode(expandVariants(node, context), context);
+
+    var eachDirective = pickDirective(node, ['$each', 'for']);
+    if (eachDirective) return expandEach(node, eachDirective.key, context);
+
+    var ownCondition = pickDirective(node, ['$if', 'when']);
+    if (ownCondition && !evalCondition(ownCondition.value, context)) return undefined;
+
+    var out = {};
+    Object.keys(node).forEach(function (key) {
+      if (isDirectiveKey(key)) return;
+      var value = resolveTemplateNode(node[key], context);
+      if (value !== undefined) out[key] = value;
+    });
+    return out;
+  }
+
+  function parseMessageText(source) {
+    var input = textOf(source).trim();
+    if (!input) throw new Error('内容是空的');
+    var parsed = null;
+    if (input.charAt(0) === '{') {
+      try {
+        parsed = JSON.parse(input);
+      } catch (error) {
+        parsed = parseSimpleYAML(input);
+      }
+    } else {
+      parsed = parseSimpleYAML(input);
+    }
+    if (!isPlainObject(parsed)) throw new Error('顶层需要是一个对象（msgtype: ...）');
+    if (parsed.msgtype) {
+      var context = sampleForEvent(state.event === 'auto' ? 'push' : state.event);
+      var expanded = resolveTemplateNode(parsed, context);
+      return isPlainObject(expanded) ? expanded : parsed;
+    }
+    if (isPlainObject(parsed.message) && parsed.message.msgtype) return parsed.message;
+    if (parsed.template_card || parsed.text || parsed.markdown || parsed.news) {
+      var guess = { msgtype: parsed.template_card ? 'template_card' : (parsed.text ? 'text' : (parsed.markdown ? 'markdown' : 'news')) };
+      Object.keys(parsed).forEach(function (key) { guess[key] = parsed[key]; });
+      return guess;
+    }
+    throw new Error('缺少 msgtype 字段');
+  }
+
+  function stateFromMessage(message) {
+    var msg = isPlainObject(message) ? message : {};
+    var msgtype = trim(msg.msgtype);
+    var next = createInitialState('card_text');
+
+    if (msgtype === 'text') {
+      var text = isPlainObject(msg.text) ? msg.text : {};
+      next.type = 'text';
+      next.text.content = textOf(text.content);
+      next.text.mentioned_list = splitList(text.mentioned_list).join(',');
+      next.text.mentioned_mobile_list = splitList(text.mentioned_mobile_list).join(',');
+      return next;
+    }
+
+    if (msgtype === 'markdown' || msgtype === 'markdown_v2') {
+      var body = isPlainObject(msg[msgtype]) ? msg[msgtype] : {};
+      next.type = msgtype;
+      next.markdown.content = textOf(body.content);
+      return next;
+    }
+
+    if (msgtype === 'news') {
+      var news = isPlainObject(msg.news) ? msg.news : {};
+      next.type = 'news';
+      next.news.articles = arrayOf(news.articles).map(function (article) {
+        var entry = isPlainObject(article) ? article : {};
+        return {
+          title: textOf(entry.title),
+          description: textOf(entry.description),
+          url: textOf(entry.url),
+          picurl: textOf(entry.picurl)
+        };
+      });
+      return next;
+    }
+
+    if (msgtype === 'image') {
+      var image = isPlainObject(msg.image) ? msg.image : {};
+      next.type = 'image';
+      next.image.base64 = stripDataUrl(textOf(image.base64));
+      next.image.md5 = textOf(image.md5);
+      hydrateImagePreview(next.image);
+      return next;
+    }
+
+    if (msgtype === 'template_card') {
+      var card = isPlainObject(msg.template_card) ? msg.template_card : {};
+      next.type = trim(card.card_type) === 'news_notice' ? 'card_news' : 'card_text';
+      next.card = cardStateFrom(card);
+      return next;
+    }
+
+    throw new Error('不支持的 msgtype：' + (msgtype || '(空)'));
+  }
+
+  function cardStateFrom(card) {
+    var out = makeEmptyCard();
+    var source = isPlainObject(card.source) ? card.source : {};
+    out.source.desc = textOf(source.desc);
+    out.source.desc_color = source.desc_color == null ? '0' : textOf(source.desc_color);
+    out.source.icon_url = textOf(source.icon_url);
+
+    var main = isPlainObject(card.main_title) ? card.main_title : {};
+    out.main_title.title = textOf(main.title);
+    out.main_title.desc = textOf(main.desc);
+
+    var emphasis = isPlainObject(card.emphasis_content) ? card.emphasis_content : {};
+    out.emphasis_content.title = textOf(emphasis.title);
+    out.emphasis_content.desc = textOf(emphasis.desc);
+
+    out.sub_title_text = textOf(card.sub_title_text);
+
+    var quote = isPlainObject(card.quote_area) ? card.quote_area : {};
+    out.quote_area = {
+      type: textOf(quote.type),
+      title: textOf(quote.title),
+      quote_text: textOf(quote.quote_text),
+      extra: textOf(quote.url || quote.appid)
+    };
+
+    var cover = isPlainObject(card.card_image) ? card.card_image : {};
+    out.card_image = { url: textOf(cover.url), aspect_ratio: textOf(cover.aspect_ratio) };
+
+    var area = isPlainObject(card.image_text_area) ? card.image_text_area : {};
+    out.image_text_area = {
+      type: textOf(area.type),
+      title: textOf(area.title),
+      desc: textOf(area.desc),
+      image_url: textOf(area.image_url),
+      extra: textOf(area.url || area.appid)
+    };
+
+    out.vertical_content_list = arrayOf(card.vertical_content_list).map(function (row) {
+      var item = isPlainObject(row) ? row : {};
+      return { title: textOf(item.title), desc: textOf(item.desc) };
+    });
+
+    out.horizontal_content_list = arrayOf(card.horizontal_content_list).map(function (row) {
+      var item = isPlainObject(row) ? row : {};
+      return {
+        keyname: textOf(item.keyname),
+        value: textOf(item.value),
+        type: textOf(item.type),
+        extra: textOf(item.url || item.media_id || item.userid)
+      };
+    });
+
+    out.jump_list = arrayOf(card.jump_list).map(function (row) {
+      var item = isPlainObject(row) ? row : {};
+      return { title: textOf(item.title), type: textOf(item.type), extra: textOf(item.url || item.appid) };
+    });
+
+    var action = isPlainObject(card.card_action) ? card.card_action : {};
+    out.card_action = { type: textOf(action.type), extra: textOf(action.url || action.appid) };
+    return out;
+  }
+
+  function hydrateImagePreview(image) {
+    if (!image.base64) return;
+    try {
+      var bytes = base64ToBytes(image.base64);
+      if (!bytes.length) return;
+      var meta = sniffImage(bytes);
+      var mime = meta && meta.mime ? meta.mime : 'image/png';
+      var size = imageDimensions(bytes);
+      image.bytes = bytes.length;
+      image.mime = mime;
+      image.preview = 'data:' + mime + ';base64,' + image.base64;
+      image.width = size && size.width ? size.width : 0;
+      image.height = size && size.height ? size.height : 0;
+    } catch (error) {
+      image.preview = '';
+    }
+  }
+
+  function openImport() {
+    var modal = $('import-modal');
+    if (!modal) return;
+    var area = $('import-text');
+    var hint = $('import-hint');
+    if (hint) {
+      hint.className = 'modal-hint';
+      hint.textContent = '支持纯消息体；YAML 子集与项目模板导出的格式一致。';
+    }
+    if (area && !area.value && ui.model) area.value = ui.model.yaml;
+    modal.hidden = false;
+    document.body.classList.add('has-modal');
+    if (area) {
+      area.focus();
+      area.setSelectionRange(0, 0);
+      area.scrollTop = 0;
+    }
+  }
+
+  function closeImport() {
+    var modal = $('import-modal');
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.classList.remove('has-modal');
+    var button = $('import-btn');
+    if (button) button.focus();
+  }
+
+  function runImport() {
+    var area = $('import-text');
+    var hint = $('import-hint');
+    try {
+      var message = parseMessageText(area ? area.value : '');
+      var next = stateFromMessage(message);
+      next.event = state.event;
+      state = next;
+      ui.lastFocus = null;
+      closeImport();
+      renderAll();
+      showToast('已导入 ' + message.msgtype + '，预览已按这份内容渲染。', 'ok');
+    } catch (error) {
+      if (hint) {
+        hint.className = 'modal-hint err';
+        hint.textContent = '导入失败：' + (error && error.message ? error.message : String(error));
+      }
+    }
+  }
+
+  function toggleCodeFull(force) {
+    var code = $('export-code');
+    var shell = code && code.closest ? code.closest('.code-shell') : null;
+    if (!shell) return;
+    var on = typeof force === 'boolean' ? force : !shell.classList.contains('is-full');
+    shell.classList.toggle('is-full', on);
+    document.body.classList.toggle('code-full', on);
+    var button = $('code-full');
+    if (button) {
+      button.textContent = on ? '✕ 关闭' : '⛶ 放大';
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+
   function setType(type) {
     if (!TYPE_META[type] || type === state.type) return;
     state.type = type;
@@ -4215,6 +5032,49 @@ const __test__ = {
       ui.lastFocus = null;
       renderAll();
       showToast('已载入 ' + TYPE_META[state.type].label + ' 示例。', 'ok');
+    });
+
+    var importButton = $('import-btn');
+    if (importButton) importButton.addEventListener('click', openImport);
+
+    var importModal = $('import-modal');
+    if (importModal) {
+      importModal.addEventListener('click', function (event) {
+        var closer = event.target.closest ? event.target.closest('[data-close-import]') : null;
+        if (closer) closeImport();
+      });
+    }
+
+    var importApply = $('import-apply');
+    if (importApply) importApply.addEventListener('click', runImport);
+
+    var importFile = $('import-file');
+    if (importFile) importFile.addEventListener('change', function () {
+      var file = importFile.files && importFile.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var area = $('import-text');
+        if (area) area.value = String(reader.result || '');
+        var hint = $('import-hint');
+        if (hint) {
+          hint.className = 'modal-hint';
+          hint.textContent = '已读取 ' + file.name + '，点“导入预览”渲染。';
+        }
+      };
+      reader.onerror = function () { showToast('读取文件失败。', 'err'); };
+      reader.readAsText(file);
+      importFile.value = '';
+    });
+
+    var codeFull = $('code-full');
+    if (codeFull) codeFull.addEventListener('click', function () { toggleCodeFull(); });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      var modal = $('import-modal');
+      if (modal && !modal.hidden) { closeImport(); return; }
+      toggleCodeFull(false);
     });
 
     var editor = $('editor');
