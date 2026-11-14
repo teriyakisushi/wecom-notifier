@@ -1,6 +1,6 @@
 name: WeCom Notifier
 description: Send GitHub repository events to a WeCom group robot with event presets, custom cards, and YAML templates.
-author: teriyakiushi
+author: teriyakisushi
 branding:
   icon: message-square
   color: green
@@ -82,6 +82,10 @@ inputs:
     description: Render and validate the message without sending it.
     required: false
     default: 'false'
+  html:
+    description: When dry-run is true, also write a self-contained HTML preview to this path (relative to the workspace).
+    required: false
+    default: ''
   fail-on-error:
     description: Fail the step when validation or sending fails.
     required: false
