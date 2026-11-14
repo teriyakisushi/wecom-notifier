@@ -11,8 +11,10 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(import.meta.dirname, '..');
+// Node 18 没有 import.meta.dirname（20.11 才加），这里用 fileURLToPath 兼容。
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const DEFAULTS = { lines: 85, branches: 75, functions: 85 };
 

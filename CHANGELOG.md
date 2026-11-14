@@ -64,6 +64,10 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   silently ignored and the dry-run preview was never written. The input is
   declared now, and `test/action-inputs.test.mjs` keeps `action.yml` and
   `src/inputs.mjs` aligned so the next new input cannot go missing.
+- `scripts/lint-templates.mjs` and `scripts/check-coverage.mjs` used
+  `import.meta.dirname`, which only exists from Node 20.11, so the Node 18 job
+  failed on `lint:templates`. Both now derive the repo root from
+  `fileURLToPath(import.meta.url)`.
 
 ## [0.1.0] - 2026-11-02
 

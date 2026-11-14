@@ -18,13 +18,15 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { parse } from 'yaml';
 
 import { runNotify } from '../src/index.mjs';
 import { Logger } from '../src/log.mjs';
 
-const ROOT = path.resolve(import.meta.dirname, '..');
+// Node 18 没有 import.meta.dirname（20.11 才加），这里用 fileURLToPath 兼容。
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FIXTURE_DIR = path.join(ROOT, 'tests', 'fixtures', 'events');
 
 const EVENT_ALIASES = {
