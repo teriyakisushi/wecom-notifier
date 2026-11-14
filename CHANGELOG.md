@@ -6,6 +6,12 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CI now dogfoods the published action: on every push to the default branch a
+  `notify` job sends the CI result through `teriyakisushi/wecom-notifier@v1`
+  with `preset: card`, and skips with a notice when `WECOM_WEBHOOK` is unset.
+
 ### Changed
 
 - `release.yml` now only fires on `vX.Y.Z` tags, so the moving `v1` tag no longer

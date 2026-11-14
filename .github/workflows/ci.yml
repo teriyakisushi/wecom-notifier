@@ -62,3 +62,39 @@ jobs:
           subtitle: "github-actions"
           content: "dist 与 composite 入口正常"
           link-url: "https://github.com/${{ github.repository }}"
+
+  notify:
+    name: WeCom notify
+    needs: [test, dist-and-action]
+    # 只在主分支 push 后播报，并且即使上游 job 失败也要跑（好让坏消息也发得出去）。
+    if: >-
+      always() && github.event_name == 'push' &&
+      github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    env:
+      WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
+    steps:
+      - name: Skip when the webhook secret is missing
+        if: env.WECOM_WEBHOOK == ''
+        run: |
+          echo "::notice title=WECOM_WEBHOOK::secret is not configured, skipping the WeCom notification."
+
+      # 用发布出去的 v1 而不是 ./，既做 dogfood 也验证 tag 指向的产物可用。
+      - name: Broadcast the CI result via the published action
+        if: env.WECOM_WEBHOOK != ''
+        uses: teriyakisushi/wecom-notifier@v1
+        with:
+          webhook: ${{ secrets.WECOM_WEBHOOK }}
+          preset: card
+          source: CI
+          title: "CI ${{ needs.test.result }}"
+          subtitle: "${{ github.repository }} · ${{ github.ref_name }}"
+          content: "${{ github.actor }} 推送的 ${{ github.sha }}"
+          info: |
+            Tests: ${{ needs.test.result }}
+            Dist: ${{ needs.dist-and-action.result }}
+            Commit: ${{ github.sha }}
+          links: |
+            查看运行 | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            查看提交 | ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          fail-on-error: "false"

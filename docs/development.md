@@ -249,7 +249,7 @@ npm test -- --test-name-pattern="send"
 
 目标 workflow：
 
-- `ci.yml`：matrix（18/20/22）跑 `npm ci` → `npm test` → `npm run lint:syntax` → `npm run lint:templates`；Node 22 额外跑 `build:check` 与 `test:coverage`；另有 dist/action job 做 `uses: ./` dry-run 冒烟。
+- `ci.yml`：matrix（18/20/22）跑 `npm ci` → `npm test` → `npm run lint:syntax` → `npm run lint:templates`；Node 22 额外跑 `build:check` 与 `test:coverage`；另有 dist/action job 做 `uses: ./` dry-run 冒烟。主分支 push 后 `notify` job 用发布出去的 `teriyakisushi/wecom-notifier@v1` 发一张 CI 结果卡片：既能 dogfood 线上 tag，也验证 `preset: card` 全链路。仓库没配 `WECOM_WEBHOOK` secret 时该 job 自动跳过并打一条 notice，fork 和 PR 不受影响。
 - `release.yml`：推送 `vX.Y.Z` tag 时触发（移动主版本 tag `v1` 不触发），Release 正文取
   `CHANGELOG.md` 对应段落。
 - `pages.yml`：从 `docs/` 发布 builder。
