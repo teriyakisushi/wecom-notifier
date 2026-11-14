@@ -250,7 +250,8 @@ npm test -- --test-name-pattern="send"
 目标 workflow：
 
 - `ci.yml`：matrix（18/20/22）跑 `npm ci` → `npm test` → `npm run lint:syntax` → `npm run lint:templates`；Node 22 额外跑 `build:check` 与 `test:coverage`；另有 dist/action job 做 `uses: ./` dry-run 冒烟。
-- `release.yml`：手动/tag 触发，构建后创建 GitHub Release。
+- `release.yml`：推送 `vX.Y.Z` tag 时触发（移动主版本 tag `v1` 不触发），Release 正文取
+  `CHANGELOG.md` 对应段落。
 - `pages.yml`：从 `docs/` 发布 builder。
 
 发布检查：
@@ -267,7 +268,11 @@ git status --short        # dist 必须已提交
 - 发版前收口版本：`package.json` / `package-lock.json` bump，`CHANGELOG.md` 把
   `[Unreleased]` 改成 `[<version>] - <date>` 并补 compare 链接（`--version` 直接读
   `package.json`，tag 与包版本不一致会让它说谎）。
-- tag 用语义化版本（如 `v0.1.0`），移动 major tag（`v1`）前确认兼容性。
+- tag 用语义化版本（如 `v0.1.0`），移动 major tag（`v1`）前确认兼容性；
+  `v1` 只作为 `uses: ...@v1` 的指针，不会生成 Release。
+- Release 正文来自 `CHANGELOG.md`：workflow 调 `node scripts/release-notes.mjs "$GITHUB_REF_NAME"`
+  抽对应版本段落，段落缺失或为空会直接失败。所以 tag 前必须先把 `[Unreleased]` 收口，
+  本地可以先 `node scripts/release-notes.mjs v<version>` 预览。
 - `action.yml` 的 `runs.steps` 引用 `dist/index.mjs`；发布 tag 必须包含 dist。
 - GitHub Marketplace 发布需要 `action.yml` 的 name/description/branding；非必需。
 - 仓库 owner：`teriyakisushi`；默认分支 `main`；MIT。

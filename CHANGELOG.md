@@ -6,6 +6,13 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- `release.yml` now only fires on `vX.Y.Z` tags, so the moving `v1` tag no longer
+  creates its own GitHub Release, and the release body is taken from the matching
+  `CHANGELOG.md` section (`scripts/release-notes.mjs`) instead of
+  `gh release create --generate-notes`.
+
 ## [0.2.0] - 2026-11-14
 
 ### Added

@@ -3,7 +3,9 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      # 只认 vX.Y.Z（允许 -rc.1 / +build 后缀）。移动主版本 tag `v1` 只用于
+      # `uses: ...@v1`，不应该每移动一次就多发一个 Release。
+      - "v[0-9]+.[0-9]+.[0-9]+*"
 
 permissions:
   contents: write
@@ -22,7 +24,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build:check
+      - name: Take the release notes from CHANGELOG
+        run: node scripts/release-notes.mjs "${GITHUB_REF_NAME}" > release-notes.md
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" --verify-tag --generate-notes
+        run: gh release create "${GITHUB_REF_NAME}" --verify-tag --notes-file release-notes.md
