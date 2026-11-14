@@ -12,7 +12,7 @@
     },
     "card_action": {
       "type": 1,
-      "url": "https://github.com/teriyakiushi/wecom-notifier/actions/runs/5555555555"
+      "url": "https://github.com/teriyakisushi/wecom-notifier/actions/runs/5555555555"
     },
     "emphasis_content": {
       "title": "失败",
@@ -36,7 +36,7 @@
       {
         "type": 1,
         "title": "查看运行",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/actions/runs/5555555555"
+        "url": "https://github.com/teriyakisushi/wecom-notifier/actions/runs/5555555555"
       }
     ]
   }

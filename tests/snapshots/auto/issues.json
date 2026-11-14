@@ -12,7 +12,7 @@
     },
     "card_action": {
       "type": 1,
-      "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77"
+      "url": "https://github.com/teriyakisushi/wecom-notifier/issues/77"
     },
     "quote_area": {
       "quote_text": "在 docs/templates.md 里没找到 `$each` 的完整示例。"
@@ -35,7 +35,7 @@
       {
         "type": 1,
         "title": "查看 Issue",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77"
+        "url": "https://github.com/teriyakisushi/wecom-notifier/issues/77"
       }
     ]
   }

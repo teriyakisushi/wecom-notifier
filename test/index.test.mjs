@@ -45,7 +45,7 @@ test('runs the push event preset without sending', async () => {
     assert.equal(result.status, 'dry-run');
     assert.equal(result.msgtype, 'template_card');
     assert.equal(result.origin, 'preset:push');
-    assert.match(result.payload, /teriyakiushi\/wecom-notifier/u);
+    assert.match(result.payload, /teriyakisushi\/wecom-notifier/u);
   });
 });
 
@@ -91,7 +91,7 @@ test('loads the one-file-per-event template and renders it', async () => {
     });
 
     assert.equal(result.origin, 'inline message');
-    assert.equal(result.message.text.content, 'teriyakiushi/wecom-notifier pushed 2 commits');
+    assert.equal(result.message.text.content, 'teriyakisushi/wecom-notifier pushed 2 commits');
   });
 });
 

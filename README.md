@@ -46,7 +46,7 @@ jobs:
       # 只有使用 .github/wecom-notify/ 下的模板文件时才需要 checkout
       - uses: actions/checkout@v4
 
-      - uses: teriyakiushi/wecom-notifier@v1
+      - uses: teriyakisushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -131,7 +131,7 @@ template_card:
 ### 简单卡片
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -153,7 +153,7 @@ template_card:
 ### 深合并任意字段
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: push
@@ -171,7 +171,7 @@ template_card:
 ### 内联完整消息
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |
@@ -321,4 +321,4 @@ node src/cli.mjs --help
 
 ## License
 
-[MIT](LICENSE) © 2026 teriyakiushi
+[MIT](LICENSE) © 2026 teriyakisushi

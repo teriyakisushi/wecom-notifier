@@ -50,7 +50,7 @@ function textCard(overrides = {}) {
     template_card: {
       card_type: 'text_notice',
       main_title: { title: '✓ 构建通过' },
-      card_action: { type: 1, url: 'https://github.com/teriyakiushi/wecom-notifier/actions' },
+      card_action: { type: 1, url: 'https://github.com/teriyakisushi/wecom-notifier/actions' },
       ...overrides,
     },
   };
@@ -63,7 +63,7 @@ function newsCard(overrides = {}) {
       card_type: 'news_notice',
       main_title: { title: '📦 新版本' },
       card_image: { url: 'https://example.com/a.png', aspect_ratio: 1.78 },
-      card_action: { type: 1, url: 'https://github.com/teriyakiushi/wecom-notifier' },
+      card_action: { type: 1, url: 'https://github.com/teriyakisushi/wecom-notifier' },
       ...overrides,
     },
   };

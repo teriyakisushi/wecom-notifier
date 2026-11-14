@@ -12,7 +12,7 @@
     },
     "card_action": {
       "type": 1,
-      "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77#issuecomment-1234567"
+      "url": "https://github.com/teriyakisushi/wecom-notifier/issues/77#issuecomment-1234567"
     },
     "quote_area": {
       "quote_text": "补了一版示例，见 #78。"
@@ -24,7 +24,7 @@
       },
       {
         "keyname": "仓库",
-        "value": "teriyakiushi/wecom-notifi…"
+        "value": "teriyakisushi/wecom-notif…"
       },
       {
         "keyname": "评论",
@@ -35,7 +35,7 @@
       {
         "type": 1,
         "title": "查看评论",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/issues/77#issuecomment-1234567"
+        "url": "https://github.com/teriyakisushi/wecom-notifier/issues/77#issuecomment-1234567"
       }
     ]
   }

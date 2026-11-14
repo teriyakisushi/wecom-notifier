@@ -18,7 +18,7 @@ const FIXTURES = path.join(ROOT, 'tests/fixtures/events');
 const SNAPSHOTS = path.join(ROOT, 'tests/snapshots');
 const UPDATE = process.env.UPDATE_SNAPSHOTS === '1';
 const NOW = new Date('2026-11-04T00:00:00.000Z');
-const REPO = 'teriyakiushi/wecom-notifier';
+const REPO = 'teriyakisushi/wecom-notifier';
 
 const EVENTS = readdirSync(FIXTURES)
   .filter((name) => name.endsWith('.json'))

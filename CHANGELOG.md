@@ -6,6 +6,8 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-14
+
 ### Added
 
 - Readable directive aliases: `when` / `for` / `item` / `as` / `limit` / `join` /
@@ -57,6 +59,11 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   sample context first, and the `workflow_run` sample now carries
   `head_branch` / `run_number` / `html_url` / `head_sha` / `head_commit` so
   imported CI cards render instead of leaking raw tokens.
+- The documented `html` input was not declared in `action.yml`. A composite step
+  only receives declared inputs through `toJSON(inputs)`, so `html:` was
+  silently ignored and the dry-run preview was never written. The input is
+  declared now, and `test/action-inputs.test.mjs` keeps `action.yml` and
+  `src/inputs.mjs` aligned so the next new input cannot go missing.
 
 ## [0.1.0] - 2026-11-02
 
@@ -86,5 +93,6 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Visual message builder in `docs/index.html` with JSON/YAML export, event
   examples, validation, image MD5 calculation, and an Action step export.
 
-[Unreleased]: https://github.com/teriyakiushi/wecom-notifier/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/teriyakiushi/wecom-notifier/releases/tag/v0.1.0
+[Unreleased]: https://github.com/teriyakisushi/wecom-notifier/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/teriyakisushi/wecom-notifier/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/teriyakisushi/wecom-notifier/releases/tag/v0.1.0

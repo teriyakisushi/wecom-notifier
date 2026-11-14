@@ -7,12 +7,12 @@
       "desc_color": 0
     },
     "main_title": {
-      "title": "📦 teriyakiushi/wecom-noti…",
-      "desc": "teriyakiushi 推送到 main"
+      "title": "📦 teriyakisushi/wecom-not…",
+      "desc": "teriyakisushi 推送到 main"
     },
     "card_action": {
       "type": 1,
-      "url": "https://github.com/teriyakiushi/wecom-notifier/compare/1111111111111111111111111111111111111111...2222222222222222222222222222222222222222"
+      "url": "https://github.com/teriyakisushi/wecom-notifier/compare/1111111111111111111111111111111111111111...2222222222222222222222222222222222222222"
     },
     "emphasis_content": {
       "title": "2",
@@ -22,7 +22,7 @@
     "horizontal_content_list": [
       {
         "keyname": "仓库",
-        "value": "teriyakiushi/wecom-notifi…"
+        "value": "teriyakisushi/wecom-notif…"
       },
       {
         "keyname": "分支",
@@ -37,12 +37,12 @@
       {
         "type": 1,
         "title": "查看对比",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/compare/1111111111111111111111111111111111111111...2222222222222222222222222222222222222222"
+        "url": "https://github.com/teriyakisushi/wecom-notifier/compare/1111111111111111111111111111111111111111...2222222222222222222222222222222222222222"
       },
       {
         "type": 1,
         "title": "仓库",
-        "url": "https://github.com/teriyakiushi/wecom-notifier"
+        "url": "https://github.com/teriyakisushi/wecom-notifier"
       }
     ]
   }

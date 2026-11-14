@@ -12,12 +12,12 @@
     },
     "card_action": {
       "type": 1,
-      "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+      "url": "https://github.com/teriyakisushi/wecom-notifier/releases/tag/v1.0.0"
     },
     "horizontal_content_list": [
       {
         "keyname": "仓库",
-        "value": "teriyakiushi/wecom-notifi…"
+        "value": "teriyakisushi/wecom-notif…"
       },
       {
         "keyname": "类型",
@@ -32,7 +32,7 @@
       {
         "type": 1,
         "title": "查看引用",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+        "url": "https://github.com/teriyakisushi/wecom-notifier/releases/tag/v1.0.0"
       }
     ]
   }

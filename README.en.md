@@ -44,7 +44,7 @@ jobs:
       # Required only when you use template files under .github/wecom-notify/
       - uses: actions/checkout@v4
 
-      - uses: teriyakiushi/wecom-notifier@v1
+      - uses: teriyakisushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -129,7 +129,7 @@ template_card:
 ### Simple card
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -151,7 +151,7 @@ Set `image-url` to switch to a `news_notice` card with a cover image.
 ### Deep-merge overrides
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: push
@@ -169,7 +169,7 @@ Objects are merged recursively; arrays are replaced; `null` deletes a key; `0`/`
 ### Inline complete message
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |
@@ -317,4 +317,4 @@ node src/cli.mjs --help
 
 ## License
 
-[MIT](LICENSE) © 2026 teriyakiushi
+[MIT](LICENSE) © 2026 teriyakisushi

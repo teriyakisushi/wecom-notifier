@@ -6,7 +6,7 @@ Composite Action; please keep changes focused and testable.
 ## Setup
 
 ```bash
-git clone https://github.com/teriyakiushi/wecom-notifier.git
+git clone https://github.com/teriyakisushi/wecom-notifier.git
 cd wecom-notifier
 npm install
 ```

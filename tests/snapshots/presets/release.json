@@ -12,7 +12,7 @@
     },
     "card_action": {
       "type": 1,
-      "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+      "url": "https://github.com/teriyakisushi/wecom-notifier/releases/tag/v1.0.0"
     },
     "quote_area": {
       "quote_text": "## 亮点 - 全新 `when` / `for` 别名 - `variants` 语法糖 - HTML 预览"
@@ -35,7 +35,7 @@
       {
         "type": 1,
         "title": "查看 Release",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.0.0"
+        "url": "https://github.com/teriyakisushi/wecom-notifier/releases/tag/v1.0.0"
       }
     ]
   }

@@ -4,9 +4,9 @@
   "repository": {
     "id": 1000001,
     "name": "wecom-notifier",
-    "full_name": "teriyakiushi/wecom-notifier",
-    "html_url": "https://github.com/teriyakiushi/wecom-notifier",
-    "url": "https://api.github.com/repos/teriyakiushi/wecom-notifier",
+    "full_name": "teriyakisushi/wecom-notifier",
+    "html_url": "https://github.com/teriyakisushi/wecom-notifier",
+    "url": "https://api.github.com/repos/teriyakisushi/wecom-notifier",
     "description": "Send GitHub events to WeCom group bots",
     "default_branch": "main",
     "private": false,
@@ -15,9 +15,9 @@
     "forks_count": 9,
     "open_issues_count": 3,
     "owner": {
-      "login": "teriyakiushi",
+      "login": "teriyakisushi",
       "id": 1000001,
-      "html_url": "https://github.com/teriyakiushi"
+      "html_url": "https://github.com/teriyakisushi"
     }
   },
   "sender": {

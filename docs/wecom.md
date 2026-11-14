@@ -121,7 +121,7 @@ Content-Type: application/json
       {
         "title": "发布 v1.2.3",
         "description": "修复了若干问题",
-        "url": "https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.2.3",
+        "url": "https://github.com/teriyakisushi/wecom-notifier/releases/tag/v1.2.3",
         "picurl": "https://example.com/cover.png"
       }
     ]

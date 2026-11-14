@@ -38,5 +38,5 @@
 GitHub Pages 从 `docs/` 发布后，地址形如：
 
 ```text
-https://teriyakiushi.github.io/wecom-notifier/
+https://teriyakisushi.github.io/wecom-notifier/
 ```

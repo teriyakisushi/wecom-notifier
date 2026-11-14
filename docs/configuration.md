@@ -78,7 +78,7 @@ webhook: ${{ secrets.WECOM_KEY }}
 
 ```yaml
 - id: wecom
-  uses: teriyakiushi/wecom-notifier@v1
+  uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     preset: card
@@ -237,9 +237,9 @@ with:
     分支: main
     耗时: 2m13s
   links: |
-    查看运行 | https://github.com/teriyakiushi/wecom-notifier/actions
-    查看提交 | https://github.com/teriyakiushi/wecom-notifier/commit/abc123
-  link-url: https://github.com/teriyakiushi/wecom-notifier/actions
+    查看运行 | https://github.com/teriyakisushi/wecom-notifier/actions
+    查看提交 | https://github.com/teriyakisushi/wecom-notifier/commit/abc123
+  link-url: https://github.com/teriyakisushi/wecom-notifier/actions
 ```
 
 `info` / `links` 的内容会作为字符串渲染（支持 `{{ }}`），不会自动截断；超过推荐长度时给 warning，而不是静默裁剪。纯文本行没有 `type` 也可以合法，不要求 `url`。
@@ -249,7 +249,7 @@ with:
 ### dry-run
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     dry-run: "true"
     preset: card

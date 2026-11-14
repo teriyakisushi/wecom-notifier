@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: teriyakiushi/wecom-notifier@v1
+      - uses: teriyakisushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
           template: .github/wecom-notify/wecom-ci-failure.yml

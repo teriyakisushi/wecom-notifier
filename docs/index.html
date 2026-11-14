@@ -812,7 +812,7 @@ body.code-full { overflow: hidden; }
       </div>
       <span class="health" id="health-chip">检查中</span>
       <button type="button" class="btn ghost" id="import-btn" title="粘贴 JSON / YAML 模板，直接看预览">导入模板</button>
-      <a class="btn ghost" href="https://github.com/teriyakiushi/wecom-notifier" target="_blank" rel="noreferrer">GitHub ↗</a>
+      <a class="btn ghost" href="https://github.com/teriyakisushi/wecom-notifier" target="_blank" rel="noreferrer">GitHub ↗</a>
     </div>
   </div>
 </header>
@@ -948,10 +948,10 @@ body.code-full { overflow: hidden; }
 </main>
 
 <footer class="site-foot">
-  <span>配合 GitHub Action <a href="https://github.com/teriyakiushi/wecom-notifier" target="_blank" rel="noreferrer">wecom-notifier</a> 使用 · 所有内容只保存在本页内存中，不会上传。</span>
+  <span>配合 GitHub Action <a href="https://github.com/teriyakisushi/wecom-notifier" target="_blank" rel="noreferrer">wecom-notifier</a> 使用 · 所有内容只保存在本页内存中，不会上传。</span>
   <span class="foot-links">
     <a href="https://developer.work.weixin.qq.com/document/path/91770" target="_blank" rel="noreferrer">企业微信消息文档</a>
-    <a href="https://github.com/teriyakiushi/wecom-notifier#readme" target="_blank" rel="noreferrer">使用说明</a>
+    <a href="https://github.com/teriyakisushi/wecom-notifier#readme" target="_blank" rel="noreferrer">使用说明</a>
   </span>
 </footer>
 
@@ -1052,7 +1052,7 @@ const SAMPLE_IMAGE_BYTES = 1210;
 const SAMPLE_IMAGE_WIDTH = 360;
 const SAMPLE_IMAGE_HEIGHT = 180;
 
-const ACTION_REPO = 'teriyakiushi/wecom-notifier@v1';
+const ACTION_REPO = 'teriyakisushi/wecom-notifier@v1';
 const TEMPLATE_DIR = '.github/wecom-notify/';
 
 function escapeHtml(value) {
@@ -1207,10 +1207,10 @@ function createInitialState(type) {
 
 function sampleBase() {
   var repo = {
-    owner: 'teriyakiushi',
+    owner: 'teriyakisushi',
     name: 'wecom-notifier',
-    full_name: 'teriyakiushi/wecom-notifier',
-    html_url: 'https://github.com/teriyakiushi/wecom-notifier',
+    full_name: 'teriyakisushi/wecom-notifier',
+    html_url: 'https://github.com/teriyakisushi/wecom-notifier',
     default_branch: 'main',
     private: false,
     description: 'Send GitHub event notifications to WeCom group webhooks.'
@@ -1223,7 +1223,7 @@ function sampleBase() {
       message: 'fix: handle empty webhook payload\n\nReturn a friendly validation error instead of crashing.',
       one_line: 'fix: handle empty webhook payload',
       author: 'octocat',
-      url: 'https://github.com/teriyakiushi/wecom-notifier/commit/3f2a9c1'
+      url: 'https://github.com/teriyakisushi/wecom-notifier/commit/3f2a9c1'
     },
     {
       short_sha: 'b81e0d4',
@@ -1231,7 +1231,7 @@ function sampleBase() {
       message: 'docs: add WeCom template examples',
       one_line: 'docs: add WeCom template examples',
       author: 'hubot',
-      url: 'https://github.com/teriyakiushi/wecom-notifier/commit/b81e0d4'
+      url: 'https://github.com/teriyakisushi/wecom-notifier/commit/b81e0d4'
     }
   ];
   return {
@@ -1246,18 +1246,18 @@ function sampleBase() {
     short_sha: sha.slice(0, 7),
     commit_count: commits.length,
     commits: commits,
-    compare_url: 'https://github.com/teriyakiushi/wecom-notifier/compare/91ae2bc...' + sha.slice(0, 7),
-    detail_url: 'https://github.com/teriyakiushi/wecom-notifier/commit/' + sha.slice(0, 7),
+    compare_url: 'https://github.com/teriyakisushi/wecom-notifier/compare/91ae2bc...' + sha.slice(0, 7),
+    detail_url: 'https://github.com/teriyakisushi/wecom-notifier/commit/' + sha.slice(0, 7),
     workflow: 'WeCom Notifier',
     run_id: 1234567890,
     run_number: 42,
     run_attempt: 1,
-    run_url: 'https://github.com/teriyakiushi/wecom-notifier/actions/runs/1234567890',
+    run_url: 'https://github.com/teriyakisushi/wecom-notifier/actions/runs/1234567890',
     now: '2026-11-02T15:30:00+08:00',
     now_unix: 1793604600,
     github: {
-      repository: 'teriyakiushi/wecom-notifier',
-      repository_owner: 'teriyakiushi',
+      repository: 'teriyakisushi/wecom-notifier',
+      repository_owner: 'teriyakisushi',
       actor: 'octocat',
       triggering_actor: 'octocat',
       sha: sha,
@@ -1278,10 +1278,10 @@ function sampleFor(event) {
   var base = sampleBase();
   var id = event === 'auto' ? 'push' : event;
   if (EVENT_IDS.indexOf(id) < 0) id = 'push';
-  var prUrl = 'https://github.com/teriyakiushi/wecom-notifier/pull/88';
-  var issueUrl = 'https://github.com/teriyakiushi/wecom-notifier/issues/64';
-  var releaseUrl = 'https://github.com/teriyakiushi/wecom-notifier/releases/tag/v1.2.0';
-  var runUrl = 'https://github.com/teriyakiushi/wecom-notifier/actions/runs/1234567890';
+  var prUrl = 'https://github.com/teriyakisushi/wecom-notifier/pull/88';
+  var issueUrl = 'https://github.com/teriyakisushi/wecom-notifier/issues/64';
+  var releaseUrl = 'https://github.com/teriyakisushi/wecom-notifier/releases/tag/v1.2.0';
+  var runUrl = 'https://github.com/teriyakisushi/wecom-notifier/actions/runs/1234567890';
   base.event_name = id;
   if (id === 'push') return base;
 

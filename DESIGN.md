@@ -828,7 +828,7 @@ CLI 支持 `--dry-run`、`--event`、`--event-name`、`--inputs`、`--template`�
 3. **预设范围**：`push`、`pull_request`、`issues`、`issue_comment`、`release`、`workflow_run`、`star`、`fork`、`create`、`delete` + `text`/`markdown`/`card`/`generic`；`file`/`voice` 仅透传 `media_id`，不做上传。**已确认。**
 4. **构建器**：把 `webcom.html` 迁移为 `docs/index.html` 并升级（修数值/MD5/校验/导出/模板变量），支持导出 JSON/YAML 文本直接替换对应事件模板；GitHub Pages 从 `docs/` 发布；原文件在首次提交中保留历史。**已确认。**
 5. **运行时**：Composite Action + 提交 `dist/index.mjs`（bundle `yaml`），要求 runner Node ≥18；不引入 Docker/运行时安装。**已确认。**
-6. **仓库信息**：GitHub ID `teriyakiushi`；MIT，版权人 `teriyakiushi`；中文 `README.md` + 英文 `README.en.md`；先 `git init` 本地跑通，不立即发布。**已确认。**
+6. **仓库信息**：GitHub ID `teriyakisushi`；MIT，版权人 `teriyakisushi`；中文 `README.md` + 英文 `README.en.md`；先 `git init` 本地跑通，不立即发布。**已确认。**
 
 ---
 

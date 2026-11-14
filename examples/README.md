@@ -36,7 +36,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - uses: teriyakiushi/wecom-notifier@v1
+      - uses: teriyakisushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
@@ -58,7 +58,7 @@ workflow 必须 checkout，否则 runner 上看不到模板：
 ```yaml
 steps:
   - uses: actions/checkout@v4
-  - uses: teriyakiushi/wecom-notifier@v1
+  - uses: teriyakisushi/wecom-notifier@v1
     with:
       webhook: ${{ secrets.WECOM_WEBHOOK }}
       template-dir: .github/wecom-notify
@@ -81,7 +81,7 @@ jobs:
     if: github.event.workflow_run.conclusion != 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: teriyakiushi/wecom-notifier@v1
+      - uses: teriyakisushi/wecom-notifier@v1
         with:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
           preset: workflow_run
@@ -94,7 +94,7 @@ jobs:
 `inline-payload.yml` 不依赖仓库模板，适合单仓库临时通知：
 
 ```yaml
-- uses: teriyakiushi/wecom-notifier@v1
+- uses: teriyakisushi/wecom-notifier@v1
   with:
     webhook: ${{ secrets.WECOM_WEBHOOK }}
     payload: |

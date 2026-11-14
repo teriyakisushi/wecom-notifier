@@ -9,7 +9,7 @@
 - 本地要真实发送时，才需要企业微信 webhook
 
 ```bash
-git clone https://github.com/teriyakiushi/wecom-notifier.git
+git clone https://github.com/teriyakisushi/wecom-notifier.git
 cd wecom-notifier
 npm ci
 npm test
@@ -40,7 +40,7 @@ npm run dev -- --dry-run \
 
 npm run dev -- --dry-run --preset card \
   --title 部署完成 --content "v1.2.3" \
-  --link-url https://github.com/teriyakiushi/wecom-notifier
+  --link-url https://github.com/teriyakisushi/wecom-notifier
 ```
 
 `npm run dev` 后面的 `--` 是给 CLI 的参数分隔符。
@@ -264,10 +264,13 @@ npm run smoke
 git status --short        # dist 必须已提交
 ```
 
+- 发版前收口版本：`package.json` / `package-lock.json` bump，`CHANGELOG.md` 把
+  `[Unreleased]` 改成 `[<version>] - <date>` 并补 compare 链接（`--version` 直接读
+  `package.json`，tag 与包版本不一致会让它说谎）。
 - tag 用语义化版本（如 `v0.1.0`），移动 major tag（`v1`）前确认兼容性。
 - `action.yml` 的 `runs.steps` 引用 `dist/index.mjs`；发布 tag 必须包含 dist。
 - GitHub Marketplace 发布需要 `action.yml` 的 name/description/branding；非必需。
-- 仓库 owner：`teriyakiushi`；默认分支 `main`；MIT。
+- 仓库 owner：`teriyakisushi`；默认分支 `main`；MIT。
 
 ## 9. 约定
 
@@ -276,6 +279,9 @@ git status --short        # dist 必须已提交
 - 错误用 `ConfigError` / `TemplateError` / `ValidationError` / `WeComError`，带 `code`/`path`/`hint`。
 - 不把 secret 写进异常消息、日志、summary；新增日志先想 redact。
 - 纯函数优先放 `util.mjs`；不要为了方便在渲染器里读文件/环境变量。
+- 新增 Action input 必须同时改 `action.yml` 与 `src/inputs.mjs`：Composite 只通过
+  `toJSON(inputs)` 拿到已声明的 input，漏声明等于文档里的能力静默失效；
+  `test/action-inputs.test.mjs` 会双向比对两者。
 - 模板表达式保持“小而可审计”，不要引入通用表达式引擎。
 - 文档改动与代码同一 PR；中文为主，英文 README 同步关键行为。
 

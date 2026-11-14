@@ -1,6 +1,6 @@
 {
   "name": "wecom-notifier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "GitHub Composite Action that sends customizable GitHub event notifications to WeCom group webhooks.",
   "type": "module",
@@ -30,12 +30,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teriyakiushi/wecom-notifier.git"
+    "url": "git+https://github.com/teriyakisushi/wecom-notifier.git"
   },
   "bugs": {
-    "url": "https://github.com/teriyakiushi/wecom-notifier/issues"
+    "url": "https://github.com/teriyakisushi/wecom-notifier/issues"
   },
-  "homepage": "https://github.com/teriyakiushi/wecom-notifier#readme",
+  "homepage": "https://github.com/teriyakisushi/wecom-notifier#readme",
   "coverageThreshold": {
     "lines": 85,
     "branches": 75,
