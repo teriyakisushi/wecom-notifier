@@ -13,6 +13,12 @@ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `CHANGELOG.md` section (`scripts/release-notes.mjs`) instead of
   `gh release create --generate-notes`.
 
+### Documentation
+
+- `README.md` / `README.en.md` restructured in a GitHub-repo style: badges,
+  feature pitch, collapsible long examples, docs table, and a direct link to the
+  online message builder (<https://teriyakisushi.github.io/wecom-notifier/>).
+
 ## [0.2.0] - 2026-11-14
 
 ### Added

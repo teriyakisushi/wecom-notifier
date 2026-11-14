@@ -1,30 +1,47 @@
-# wecom-notifier
+<h1 align="center">wecom-notifier</h1>
 
-Send GitHub repository events to a WeCom (WeChat Work) group robot webhook. This is a **GitHub Composite Action** with zero-config event cards, per-event template files, and full control over the WeCom message body.
+<p align="center">Send GitHub repository events to a WeCom (WeChat Work) group robot webhook — a Composite Action with zero runtime dependencies.</p>
 
-[中文](README.md) · [Configuration](docs/configuration.md) · [Templates](docs/templates.md) · [Events](docs/events.md) · [WeCom limits](docs/wecom.md) · [Builder](docs/index.html)
+<p align="center">
+  <a href="https://github.com/teriyakisushi/wecom-notifier/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/teriyakisushi/wecom-notifier/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/teriyakisushi/wecom-notifier/releases"><img alt="Release" src="https://img.shields.io/github/v/release/teriyakisushi/wecom-notifier?label=release"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/teriyakisushi/wecom-notifier"></a>
+  <img alt="Node" src="https://img.shields.io/badge/node-%E2%89%A518-339933?logo=node.js&logoColor=white">
+</p>
+
+<p align="center">
+  <a href="https://teriyakisushi.github.io/wecom-notifier/"><b>🔧 Message builder</b></a> ·
+  <a href="docs/">Docs</a> ·
+  <a href="examples/">Examples</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="README.md">中文</a>
+</p>
+
+```yaml
+- uses: teriyakisushi/wecom-notifier@v1
+  with:
+    webhook: ${{ secrets.WECOM_WEBHOOK }}
+```
+
+Two lines to wire it up: `push`, pull requests, issues, releases, `workflow_run`, stars, forks and friends become well-formatted WeCom cards. When the defaults are not enough, split templates per event or inline the whole message body.
 
 ## Features
 
-- **Zero config**: `preset: auto` picks a card for push, pull request, issues, releases, workflow runs, stars, forks, and more.
-- **One file per event**: `.github/wecom-notify/wecom-push.yml` only handles `push`; `wecom-pull_request.yml` only handles `pull_request`. No single giant YAML.
-- **Three levels of customization**:
-  1. Action inputs: `preset: card` plus `title` / `subtitle` / `content` / `info` / `links` / `image-url`.
-  2. Repository templates: YAML/JSON with `{{ }}` expressions, `$if`, `$each`, and filters.
-  3. Inline `payload`: a complete WeCom message directly in the workflow.
-- **All webhook message types**: `text`, `markdown`, `markdown_v2`, `image`, `news`, `file`, `voice`, and `template_card` (`text_notice` / `news_notice`).
-- **Validate before sending**: byte limits, required fields, list limits, image MD5, card aspect ratio, and more. Invalid messages are never sent.
-- **Safe by default**: the webhook is masked in logs; templates cannot access secrets, tokens, or environment variables; template paths are confined to the workspace.
-- **Test locally**: `dry-run`, a CLI, unit tests, and an Action-level smoke test. No webhook needed to render JSON.
-- **Visual builder**: a dependency-free [`docs/index.html`](docs/index.html) that exports message JSON/YAML and an Action step.
+- **Works with zero config**: `preset: auto` picks a card from `GITHUB_EVENT_NAME`; no template required.
+- **One file per event**: `.github/wecom-notify/wecom-push.yml` only handles `push`, `wecom-pull_request.yml` only handles pull requests — no single giant YAML.
+- **Three levels of customization**: Action inputs → repository template files → inline `payload`.
+- **All 8 message types**: `text`, `markdown`, `markdown_v2`, `image`, `news`, `file`, `voice`, and `template_card` (`text_notice` / `news_notice`).
+- **Validate before sending**: byte limits, required fields, list limits, image MD5 and card aspect ratio are checked first; invalid messages are never sent.
+- **Verify offline**: `dry-run`, a CLI, unit tests and an Action-level smoke test render JSON and an HTML preview without a webhook.
 
 ## Quick start
 
 ### 1. Add the webhook secret
 
-In WeCom: group → group robot → copy the webhook URL. In GitHub: **Settings → Secrets and variables → Actions → New repository secret**.
+In WeCom: group → group robot → copy the webhook URL. In GitHub:
+**Settings → Secrets and variables → Actions → New repository secret**, name it `WECOM_WEBHOOK`.
 
-Name it `WECOM_WEBHOOK` and paste the full URL (`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...`). You can also store only the key; the action will use the default API base.
+The value can be the full URL (`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...`) or just the key; the action fills in the default API base.
 
 ### 2. Add a workflow
 
@@ -41,7 +58,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      # Required only when you use template files under .github/wecom-notify/
+      # Only needed when you use templates under .github/wecom-notify/
       - uses: actions/checkout@v4
 
       - uses: teriyakisushi/wecom-notifier@v1
@@ -49,42 +66,51 @@ jobs:
           webhook: ${{ secrets.WECOM_WEBHOOK }}
 ```
 
-> Until the first `v1` tag is published, use `uses: ./` inside this repository or a fork.
+> Testing inside this repository or a fork? Change `uses:` to `uses: ./`.
 
-With no `preset`, the default is `auto`:
+Without `preset`, it defaults to `auto`:
 
 | Event | Default card |
 | --- | --- |
-| `push` | repository, branch, commit count, recent commits, compare link |
-| `pull_request` | PR number/title, author, changes, state |
+| `push` | repository, branch, commit count, latest commit, compare link |
+| `pull_request` | PR number/title, author, additions/deletions, state |
 | `issues` / `issue_comment` | issue/comment summary and link |
-| `release` | tag, release name, notes summary |
+| `release` | tag, release name, notes excerpt |
 | `workflow_run` | workflow result, branch, run link |
-| `star` / `fork` | new star/fork details |
+| `star` / `fork` | new star / fork details |
 | `create` / `delete` | branch or tag created/deleted |
-| other events | generic markdown with event, repo, actor, and run link |
+| anything else | generic markdown (event, repository, actor, run link) |
 
-## One file per event
+## Message builder
 
-Put complex customization in `.github/wecom-notify/`, one file per event:
+No appetite for hand-written card JSON? Use the online builder: **<https://teriyakisushi.github.io/wecom-notifier/>**
+
+- Fill in fields on the left, see a live preview on the right that closely matches the real card;
+- Import an existing template and keep editing, or start from **Load example**;
+- Export **JSON / YAML / an Action step / a template file** — the exported shape is exactly what the action accepts;
+- Pure front end and fully offline (you can also open [`docs/index.html`](docs/index.html) directly); nothing is uploaded, not even the webhook.
+
+## Customize
+
+### One file per event (recommended)
 
 ```text
 .github/wecom-notify/
-├── wecom-push.yml          # push only
-├── wecom-pull_request.yml  # pull_request only
-├── wecom-release.yml       # release only
-└── default.yml            # optional fallback
+├── wecom-push.yml          # only push
+├── wecom-pull_request.yml  # only pull_request
+├── wecom-release.yml       # only release
+└── default.yml             # optional fallback
 ```
 
-Discovery rules:
+Lookup order:
 
 1. exact `<event>.yml` / `<event>.yaml`;
-2. or suffix match `*-<event>.yml` / `*-<event>.yaml` (for example `wecom-push.yml`);
-3. multiple matches for the same event are an error;
+2. or suffix `*-<event>.yml` / `*-<event>.yaml` (e.g. `wecom-push.yml`);
+3. two candidates for the same event is an error;
 4. otherwise `default.yml` / `_default.yml`;
-5. otherwise fall back to the built-in preset.
+5. otherwise the built-in preset.
 
-Minimal override for push:
+Smallest possible change — only restyle the source line of the push card:
 
 ```yaml
 # .github/wecom-notify/wecom-push.yml
@@ -96,7 +122,8 @@ overrides:
       desc_color: 1
 ```
 
-A full custom card for pull requests:
+<details>
+<summary>Complete pull request card</summary>
 
 ```yaml
 # .github/wecom-notify/wecom-pull_request.yml
@@ -111,22 +138,25 @@ template_card:
     desc: "{{ pr.title | truncate: 30 }}"
   sub_title_text: "{{ pr.user.login }} · {{ pr.base.ref }} ← {{ pr.head.ref }}"
   horizontal_content_list:
-    - keyname: 状态
+    - keyname: State
       value: "{{ pr.state }}"
-    - keyname: 来源
+    - keyname: From
       value: "{{ pr.head.ref }}"
-    - keyname: 目标
+    - keyname: Into
       value: "{{ pr.base.ref }}"
   card_action:
     type: 1
     url: "{{ pr.html_url }}"
 ```
 
-> When using template files, run `actions/checkout` first so the runner can read `.github/wecom-notify/`.
+</details>
 
-## Customize in the workflow
+> Templates live in the repository, so the workflow must `actions/checkout` first.
+> More cards are in [`examples/`](examples/); `npm run preview` renders them to HTML so you can look before you send.
 
-### Simple card
+### Inline in the workflow
+
+**Simple card** (`preset: card`):
 
 ```yaml
 - uses: teriyakisushi/wecom-notifier@v1
@@ -135,20 +165,19 @@ template_card:
     preset: card
     title: "🚀 Deployed · {{ repo.name }}"
     subtitle: production
-    content: "Version v1.2.3, took 2m13s"
+    content: "v1.2.3, took 2m13s"
     info: |
       Version: v1.2.3
       Branch: main
       Duration: 2m13s
     links: |
-      View run | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      View commit | ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-    link-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      Run | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      Commit | ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
 ```
 
-Set `image-url` to switch to a `news_notice` card with a cover image.
+A non-empty `image-url` switches to the `news_notice` card automatically.
 
-### Deep-merge overrides
+**Deep-merge any field** (`overrides`):
 
 ```yaml
 - uses: teriyakisushi/wecom-notifier@v1
@@ -158,15 +187,15 @@ Set `image-url` to switch to a `news_notice` card with a cover image.
     overrides: |
       template_card:
         source:
-          desc: My robot
+          desc: my robot
           desc_color: 3
         main_title:
           title: "📦 {{ repo.name }} / {{ ref_name }}"
 ```
 
-Objects are merged recursively; arrays are replaced; `null` deletes a key; `0`/`false` are preserved.
+Objects merge key by key, arrays are replaced wholesale, `null` deletes a key, and `0` / `false` are kept.
 
-### Inline complete message
+**Inline complete message** (`payload`):
 
 ```yaml
 - uses: teriyakisushi/wecom-notifier@v1
@@ -182,9 +211,9 @@ Objects are merged recursively; arrays are replaced; `null` deletes a key; `0`/`
           > Actor: {{ actor }}
 ```
 
-Do not set `payload` and `template` at the same time.
+Do not set `payload` and `template` together; keep one source, or paste the file content into `payload`.
 
-## Template syntax at a glance
+## Template syntax
 
 ```yaml
 msgtype: template_card
@@ -194,7 +223,7 @@ template_card:
     title: "{{ repo.name }}"
     desc: "{{ event_name }} · {{ actor | default('unknown') }}"
 
-  # swap a whole block by state; untouched fields are inherited
+  # Swap a whole block on a value; untouched fields are kept
   variants:
     by: workflow_run.conclusion
     cases:
@@ -202,13 +231,13 @@ template_card:
       failure: { source: { desc: "failed", desc_color: 2 } }
     default: { source: { desc: "running", desc_color: 0 } }
 
-  # kept only when the condition holds; on an array item the row disappears
+  # Drop the element when the condition is false
   horizontal_content_list:
     - when: commit_count > 0
       keyname: Commits
       value: "{{ commit_count }}"
 
-  # iterate an array
+  # Loop over an array
   vertical_content_list:
     for: commits
     limit: 3
@@ -222,70 +251,67 @@ template_card:
 ```
 
 - Expressions: paths, literals, `==` / `!=` / `>` / `<`, `&&` / `||` / `!`, parentheses, filters.
-- Directives: `when` / `$if`, `for` / `$each`, `item` / `$item`, `as` / `$as`, `limit` / `$limit`, `join` / `$join`, `prefix` / `$prefix`, `suffix` / `$suffix`. Both spellings are equivalent and the `$` form keeps working.
-- `variants`: `{ by, cases, default }` deep-merges the selected branch onto its siblings; write `null` in a branch to drop a sibling key.
+- Directives: `when` / `$if`, `for` / `$each`, `item` / `$item`, `as` / `$as`, `limit` / `$limit`, `join` / `$join`, `prefix` / `$prefix`, `suffix` / `$suffix`; both spellings are equivalent.
+- `variants`: `{ by, cases, default }`; the matching branch deep-merges into the current object, and `null` inside a branch removes a sibling key.
 - Filters: `default`, `truncate`, `truncateBytes`, `firstLine`, `oneLine`, `upper` / `lower`, `replace`, `join`, `take` / `skip`, `first` / `last`, `length`, `json`, `urlencode`, `escapeMd`.
-- Context: `event`, `event_name`, `actor`, `repo.*`, `github.*`, `ref_name`, `sha`, `short_sha`, `workflow`, `run_id`, `run_url`, `now`, `vars.*`, `commits`, `pr`, `issue`, `release`, `workflow_run`, and more. **No secrets, token, env, or inputs.**
-- Limits: depth 20, 10,000 nodes, at most 100 items per `for`; template paths must stay inside the workspace.
-- Local checks: `npm run dev -- --dry-run --html preview.html ...` writes a visual preview; `npm run lint:templates` renders the templates under `examples/` and reports errors and over-long fields.
+- Context: `event`, `event_name`, `actor`, `repo.*`, `github.*`, `ref_name`, `sha`, `short_sha`, `workflow`, `run_id`, `run_url`, `now`, `vars.*`, `commits`, `pr`, `issue`, `release`, `workflow_run`, and more; **never secrets / token / env**.
+- Limits: render depth 20, 10000 nodes, at most 100 items per `for`; template paths must stay inside the workspace.
 
-See [docs/templates.md](docs/templates.md) for the full syntax and context table.
+Full syntax, context table and limits: [docs/templates.md](docs/templates.md). Locally, `npm run dev -- --dry-run --html preview.html ...` writes an HTML preview, and `npm run lint:templates` renders everything under `examples/` to catch errors and over-long fields.
 
 ## Inputs and outputs
 
-Common inputs:
-
 | Input | Default | Description |
 | --- | --- | --- |
-| `webhook` | empty (dry-run only) | Full webhook URL or key only; use a secret |
-| `preset` | `auto` | `auto`, an event name, `text`, `markdown`, `card`, or `none` |
+| `webhook` | empty (fine for dry-run) | full webhook URL or just the key; prefer a secret |
+| `preset` | `auto` | `auto` / event name / `text` / `markdown` / `card` / `none` |
 | `payload` | empty | inline YAML/JSON message or config |
 | `template` | empty | explicit template file; wins over `template-dir` |
-| `template-dir` | `.github/wecom-notify` | per-event discovery directory; empty disables it |
+| `template-dir` | `.github/wecom-notify` | per-event template directory; empty string disables |
 | `overrides` | empty | YAML/JSON deep-merge patch |
 | `vars` | empty | YAML/JSON variables exposed as `vars.*` |
-| `dry-run` | `false` | render and validate without sending |
-| `fail-on-error` | `true` | fail the step on validation/send errors |
-| `auto-truncate` | `true` | truncate hard text/markdown/news byte limits |
-| `timeout` / `retries` | `10` / `2` | request timeout and retry count |
-| `api-base` | `https://qyapi.weixin.qq.com` | API base when `webhook` is only a key |
-| `debug` | `false` | extra diagnostics without secrets |
-| `html` | empty | During dry-run, also write a self-contained HTML preview to this path |
+| `dry-run` | `false` | render and validate only |
+| `fail-on-error` | `true` | fail the step when validation or sending fails |
+| `auto-truncate` | `true` | truncate hard byte limits for text/markdown/news |
+| `timeout` / `retries` | `10` / `2` | per-request timeout (seconds) and retry count |
+| `api-base` | `https://qyapi.weixin.qq.com` | API base used when `webhook` is only a key |
+| `debug` | `false` | diagnostics without the key |
+| `html` | empty | also write a self-contained HTML preview on dry-run |
 
 Outputs: `msgtype`, `payload` (rendered JSON, up to 64KB), `errcode`, `errmsg`.
 
-See [docs/configuration.md](docs/configuration.md) for the full input table, source precedence, and config document format.
+Full input table, source precedence and config file format: [docs/configuration.md](docs/configuration.md).
 
 ## WeCom limits
 
-- At most **20 messages per minute** per webhook; `45009` is retried with backoff.
+- At most **20 messages/minute** per webhook; over the limit you get `45009`, and the action backs off and retries.
 - `text.content` ≤ 2048 bytes; `markdown` / `markdown_v2` ≤ 4096 bytes.
-- `news.articles` 1–8; title ≤ 128 bytes; description ≤ 512 bytes.
+- `news.articles` holds 1–8 items; title ≤ 128 bytes, description ≤ 512 bytes.
 - A `text_notice` card needs `main_title.title` or `sub_title_text`, and `card_action` is required.
-- Card images must be public URLs reachable by WeCom. `image` messages may embed base64 (≤ 2MB, JPG/PNG).
-- `file` / `voice` only pass through a `media_id`; upload it with WeCom `upload_media` first. A media ID is valid for 3 days and only for the same webhook.
+- Card images must be public URLs reachable by WeCom; `image` messages may inline base64 (≤ 2MB, JPG/PNG).
+- `file` / `voice` only pass through a `media_id`, uploaded earlier via `upload_media`; it expires in 3 days and is bound to that webhook.
 
-See [docs/wecom.md](docs/wecom.md) and the official [91770](https://developer.work.weixin.qq.com/document/path/91770).
+Details: [docs/wecom.md](docs/wecom.md) and the official docs [91770](https://developer.work.weixin.qq.com/document/path/91770).
 
 ## Security
 
-- Treat the webhook URL as a credential. The action masks it immediately and redacts errors.
-- Templates cannot access `secrets`, `github.token`, `env`, or action inputs; only the event and explicit `vars`.
-- Avoid `pull_request_target` + checking out PR code + secrets. Fork PRs do not receive secrets by default.
-- Template files must be inside the workspace and are bounded by size/depth/node limits.
-- Invalid messages are never sent. `fail-on-error: false` downgrades failures to warnings.
+- A webhook URL is a credential: never commit it, never log it. The action runs `::add-mask::` on startup and redacts error messages.
+- Template context exposes no `secrets`, `github.token`, `env` or Action inputs — only the event and explicit `vars`.
+- Avoid `pull_request_target` + checking out PR code + secrets; fork PRs do not get secrets anyway.
+- Templates can only read files inside the workspace, with size, depth and node limits.
+- Validation failures never send; `fail-on-error: false` downgrades them to warnings.
 
-Report vulnerabilities privately via GitHub Security Advisories; see [SECURITY.md](SECURITY.md).
+Please report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ## Local development
 
-Requires Node.js 18+.
+Requires Node.js ≥ 18.
 
 ```bash
-npm install
-npm test
-npm run build
-npm run build:check
+npm ci
+npm test                 # unit tests
+npm run build            # bundle dist/index.mjs (commit it)
+npm run build:check      # dist must match the source
 
 # Render a sample push event without a webhook
 node src/cli.mjs --dry-run \
@@ -295,25 +321,29 @@ node src/cli.mjs --dry-run \
 # Render a simple card
 node src/cli.mjs --dry-run --preset card \
   --title "Deployed" --subtitle production \
-  --content "Version v1.2.3"
+  --content "v1.2.3"
+
+node src/cli.mjs --help  # all flags
 ```
 
-```bash
-node src/cli.mjs --help
-```
-
-`dist/index.mjs` is the bundled Action entry point (esbuild + YAML parser). Rebuild and commit it after changing `src/`.
+`dist/index.mjs` is the esbuild bundle (YAML parser included) and the real entry point of the action, so rebuild and commit it with every source change. Release steps: [docs/development.md](docs/development.md).
 
 ## Documentation
 
-- [Configuration: inputs, outputs, precedence](docs/configuration.md)
-- [Templates: syntax, expressions, directives, context](docs/templates.md)
-- [Event presets and examples](docs/events.md)
-- [WeCom message types and limits](docs/wecom.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Development and release](docs/development.md)
-- [Visual builder](docs/index.html)
-- [Examples](examples/README.md)
+| Document | Contents |
+| --- | --- |
+| [docs/configuration.md](docs/configuration.md) | inputs, outputs, source precedence |
+| [docs/templates.md](docs/templates.md) | template syntax, expressions, directives, context |
+| [docs/events.md](docs/events.md) | event presets and customization examples |
+| [docs/wecom.md](docs/wecom.md) | WeCom message types and limits |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | common errors and fixes |
+| [docs/development.md](docs/development.md) | layout, tests, CI and releases |
+| [examples/](examples/README.md) | copy-paste cards and workflows |
+| [Message builder](https://teriyakisushi.github.io/wecom-notifier/) | assemble messages online, export JSON / YAML |
+
+## Contributing
+
+Issues and PRs are welcome — read [CONTRIBUTING.md](CONTRIBUTING.md) first and run `npm test`, `npm run lint:templates` and `npm run build:check` before pushing. Security policy: [SECURITY.md](SECURITY.md).
 
 ## License
 
